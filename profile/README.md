@@ -18,13 +18,24 @@ For full documentation, format details, and deeper guides, visit [mdzip.org](htt
 
 ```mermaid
 flowchart BT
-    cli["mdzip-cli"]
-    viewer["mdzip-viewer"]
+    cli["mdzip-cli (Win/Mac/Linux)<br/><a href="https://github.com/kylemwhite/mdz-cli/releases/latest" target="_blank" rel="noopener" class="no-ext-icon">
+            <img src="https://img.shields.io/github/v/release/kylemwhite/mdz-cli?display_name=tag" alt="Latest release for mdz-cli">
+          </a>"]
+    viewer["mdzip-viewer<br/> <a href="https://www.npmjs.com/package/mdz-viewer" target="_blank" rel="noopener" class="no-ext-icon">
+            <img src="https://img.shields.io/npm/v/mdz-viewer" alt="NPM package version for mdz-viewer">
+          </a>"]
 
-    core["mdzip-core (.NET)"]
-    corejs["mdzip-core-js (TS/JS)"]
+    core["mdzip-core (C#/.NET)<br/> <a href="https://github.com/kylemwhite/mdz-core/pkgs/nuget/mdz-core" target="_blank" rel="noopener" class="no-ext-icon">
+            <img src="https://img.shields.io/badge/GitHub%20Packages-mdz--core-0969da?logo=github" alt="GitHub Packages listing for mdz-core">
+          </a>"]
+    corejs["mdzip-core-js (TS/JS)<br/> <a href="https://www.npmjs.com/package/mdz-core-js" target="_blank" rel="noopener" class="no-ext-icon">
+            <img src="https://img.shields.io/npm/v/mdz-core-js" alt="NPM package version for mdz-core-js">
+          </a>"]
 
-    spec["mdzip-spec<br/><br/><br/>"]
+    spec["mdzip-spec<br/>
+    <a href="https://github.com/mdzip-project/mdzip-spec/releases/latest" target="_blank" rel="noopener" >
+      <img src="https://img.shields.io/github/v/release/mdzip-project/mdzip-spec?display_name=tag" alt="Latest release for MDZip-spec">
+    </a>"]
 
     cli --> core
     viewer --> corejs
