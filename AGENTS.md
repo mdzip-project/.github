@@ -5,6 +5,13 @@ Instructions for AI agents working across the MDZip workspace. This repo
 from here, reaching into the product repositories listed in
 [docs/workspace.md](docs/workspace.md).
 
+**Start here:** current cross-repo initiatives and their state live in
+[docs/roadmap.md](docs/roadmap.md). For building/testing/releasing the .NET
+repos (`mdzip-core`, `mdzip-cli`), see
+[docs/dotnet-workflow.md](docs/dotnet-workflow.md). The active initiative is
+**core parity** — the detailed gap + phased plan is in
+[docs/core-parity.md](docs/core-parity.md).
+
 ## Orchestration model
 
 - Plan cross-repository work from the hub. Implement each change on a
