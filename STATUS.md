@@ -1,5 +1,5 @@
-Status: idle
-Last: Committed parity map + roadmap + .NET workflow docs (cold-start ready)
+Status: ready-to-commit
+Last: Updated core parity docs after mdzip-core implementation
 
 <!-- The .github coordination hub. Dashboard reads Status:/Last:.
      Status: idle | in-progress | awaiting-test | ready-to-commit | blocked

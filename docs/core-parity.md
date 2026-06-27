@@ -6,16 +6,42 @@ in [roadmap.md](roadmap.md).
 
 - **Baseline:** `mdzip-core` **1.2.0** (net10, just upgraded) · `mdzip-core-js` **1.3.2**
 - **Target:** `mdzip-core` **1.3.0** = parity, to line up with core-js 1.3.x
+- **Core implementation status:** Phases 1-6 implemented and locally verified in
+  `mdzip-core` on the parity branch stack ending at `parity/phase6-workspace`
+  (`7ca50b7`). Latest verification: `dotnet test mdz-core.slnx -c Release`
+  passed 68/68 tests for both `net8.0` and `net10.0`.
+- **Remaining cross-repo work:** expose the new core capabilities in
+  `mdzip-cli` after the core package/release path is chosen.
 - Legend: ✅ present · ⚠️ partial · ❌ missing in C#
 
-The C# public surface today is `MdzArchive` (10 static methods): `Create`,
+The original C# public surface was `MdzArchive` (10 static methods): `Create`,
 `CreateFromFiles`, `AddFile`, `RemoveFile`, `Extract`, `List`,
-`ListDetailed`, `ReadManifest`, `ResolveEntryPoint`, `Validate`.
+`ListDetailed`, `ReadManifest`, `ResolveEntryPoint`, `Validate`. The parity
+branch stack expands that surface with read/inspect, validation, manifest
+editing, batch mutation, packaging, asset, orphan-analysis, and workspace APIs.
+
+## Implementation status
+
+| Phase | `mdzip-core` status | Commit |
+|---|---|---|
+| **1** read/inspect | Implemented and tested | `1722d21` |
+| **2** validation helpers | Implemented and tested | `0b80de1` |
+| **3** manifest editing | Implemented and tested | `f403061` |
+| **4** mutation/packaging | Implemented and tested | `f9d5671` |
+| **5** assets/orphan detection | Implemented and tested | `afa37c0` |
+| **6** workspace | Implemented and tested | `7ca50b7` |
+
+CLI exposure is still pending and should follow the NuGet/local-feed workflow in
+[dotnet-workflow.md](dotnet-workflow.md).
 
 ## API comparison
 
+The tables below preserve the original gap map from before the parity branch
+stack. See [Implementation status](#implementation-status) for the current
+`mdzip-core` implementation state.
+
 ### 1. Read / inspect entries
-| core-js | C# today | Gap |
+| core-js | C# baseline | Original gap |
 |---|---|---|
 | `open` | (path-based statics) | ✅ different model, ok |
 | `readManifest` | `ReadManifest` | ✅ |
@@ -27,7 +53,7 @@ The C# public surface today is `MdzArchive` (10 static methods): `Create`,
 | `buildPathTree` | — | ❌ hierarchical tree |
 
 ### 2. Validate
-| core-js | C# today | Gap |
+| core-js | C# baseline | Original gap |
 |---|---|---|
 | `validate` | `Validate` | ⚠️ simpler |
 | `getValidationStatus` (valid/warning/error) | `ValidationResult` (bool-ish) | ❌ tri-state status |
@@ -35,7 +61,7 @@ The C# public surface today is `MdzArchive` (10 static methods): `Create`,
 | `validateArchivePath` | `PathValidator` | ⚠️ exists, align semantics |
 
 ### 3. Mutate files
-| core-js | C# today | Gap |
+| core-js | C# baseline | Original gap |
 |---|---|---|
 | `addFile` | `AddFile` | ✅ |
 | `removeFile` | `RemoveFile` | ✅ |
@@ -43,14 +69,14 @@ The C# public surface today is `MdzArchive` (10 static methods): `Create`,
 | `updateFiles` (atomic multi add+remove) | — | ❌ atomic batch |
 
 ### 4. Manifest editing
-| core-js | C# today | Gap |
+| core-js | C# baseline | Original gap |
 |---|---|---|
 | `createManifest` / `buildManifestFromOptions` | (internal to `Create`) | ⚠️ not standalone |
 | `updateManifest` | — | ❌ read-only today |
 | `splitManifestMetadata` (editable vs reserved) | — | ❌ |
 
 ### 5. Packaging
-| core-js | C# today | Gap |
+| core-js | C# baseline | Original gap |
 |---|---|---|
 | `Create` / `CreateFromFiles` | `Create` / `CreateFromFiles` | ✅ basic |
 | `buildArchive` (options, progress, warnings, file-map, modes) | — | ❌ rich packager |
@@ -58,7 +84,7 @@ The C# public surface today is `MdzArchive` (10 static methods): `Create`,
 | `makeUniqueArchivePath` | — | ❌ |
 
 ### 6. Assets
-| core-js | C# today | Gap |
+| core-js | C# baseline | Original gap |
 |---|---|---|
 | `classifyAssetKind` (image/audio/video/font/data/other) | — | ❌ |
 | `inferMimeType` / `IMAGE_MIME_TYPES` | — | ❌ |
@@ -66,7 +92,7 @@ The C# public surface today is `MdzArchive` (10 static methods): `Create`,
 | `findOrphanedAssets` (missing / unreferenced) | — | ❌ high value |
 
 ### 7. Workspace (editor model)
-| core-js | C# today | Gap |
+| core-js | C# baseline | Original gap |
 |---|---|---|
 | `openWorkspace` / `buildWorkspace` | — | ❌ whole subsystem |
 | `createWorkspaceAssetFromFile` / `exportWorkspaceAsset` | — | ❌ |

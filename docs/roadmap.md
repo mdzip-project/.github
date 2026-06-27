@@ -20,7 +20,10 @@ surface the new capabilities in `mdzip-cli`. Detailed gap + phased plan:
   with `mdzip-core-js` 1.3.x.
 - **Phases:** read/inspect → validation → manifest editing → mutation/packaging
   → assets/orphan-detection → workspace (see core-parity.md).
-- **Status:** mapped, not started. Awaiting scope/sequencing decision.
+- **Status:** `mdzip-core` implementation phases 1-6 are committed on the parity
+  branch stack ending at `parity/phase6-workspace` (`7ca50b7`) and verified with
+  `dotnet test mdz-core.slnx -c Release` (68/68 on both `net8.0` and `net10.0`).
+  Remaining work: package/release core, then expose capabilities in `mdzip-cli`.
 
 ## Done
 
