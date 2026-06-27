@@ -7,7 +7,9 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
-const { execFileSync } = require('child_process');
+const { execFile } = require('child_process');
+const execFileP = require('util').promisify(execFile);
+const gitOut = (dir, args) => execFileP('git', ['-C', dir, ...args], { encoding: 'utf8', maxBuffer: 4 << 20 }).then(r => r.stdout);
 
 const PORT = process.env.PORT || 7777;
 const GITHUB_ROOT = path.resolve(__dirname, '..', '..');         // the .github repo root
@@ -60,12 +62,14 @@ function parseManifest(md) {
 function readJSON(p) { try { return JSON.parse(fs.readFileSync(p, 'utf8')); } catch { return null; } }
 function repoDir(repo) { return path.resolve(GITHUB_ROOT, repo.path); }
 
-function gitStatus(dir) {
+async function gitStatus(dir) {
   try {
-    const out = execFileSync('git', ['-C', dir, 'status', '--porcelain'], { encoding: 'utf8' });
-    const branch = execFileSync('git', ['-C', dir, 'rev-parse', '--abbrev-ref', 'HEAD'], { encoding: 'utf8' }).trim();
+    const [out, branchRaw] = await Promise.all([
+      gitOut(dir, ['status', '--porcelain']),
+      gitOut(dir, ['rev-parse', '--abbrev-ref', 'HEAD']),
+    ]);
     const changes = out.split(/\r?\n/).filter(Boolean).length;
-    return { ok: true, changes, branch };
+    return { ok: true, changes, branch: branchRaw.trim() };
   } catch (e) { return { ok: false, changes: 0, branch: '?', error: String(e.message || e).split('\n')[0] }; }
 }
 
@@ -80,7 +84,7 @@ function cmp(a, b) {
   return 0;
 }
 
-function computeStatus() {
+async function computeStatus() {
   let manifest;
   try { manifest = parseManifest(fs.readFileSync(MANIFEST, 'utf8')); }
   catch (e) { return { error: 'Cannot read manifest: ' + e.message, repos: [] }; }
@@ -92,10 +96,10 @@ function computeStatus() {
     if (pkg && pkg.version) producerVersion[r.name] = pkg.version;
   }
 
-  const rows = manifest.repos.map(repo => {
+  const rows = await Promise.all(manifest.repos.map(async repo => {
     const dir = repoDir(repo);
     const exists = fs.existsSync(dir);
-    const git = exists ? gitStatus(dir) : { ok: false, changes: 0, branch: '-', error: 'missing on disk' };
+    const git = exists ? await gitStatus(dir) : { ok: false, changes: 0, branch: '-', error: 'missing on disk' };
     const pkg = readJSON(path.join(dir, 'package.json'));
 
     // version: package.json -> latest git tag -> STATUS.md "Version:" -> —
@@ -103,7 +107,7 @@ function computeStatus() {
     let vsrc = version ? 'pkg' : null;
     if (!version && exists) {
       try {
-        version = execFileSync('git', ['-C', dir, 'describe', '--tags', '--abbrev=0'], { encoding: 'utf8' }).trim().replace(/^v/, '');
+        version = (await gitOut(dir, ['describe', '--tags', '--abbrev=0'])).trim().replace(/^v/, '');
         if (version) vsrc = 'tag';
       } catch {}
     }
@@ -152,7 +156,7 @@ function computeStatus() {
       gitDirty: git.changes > 0 || !git.ok,
       deps: depsState, behind, next, state,
     };
-  });
+  }));
 
   return { generated: new Date().toISOString(), root: GITHUB_ROOT, repos: rows };
 }
@@ -180,9 +184,19 @@ const PAGE = `<!doctype html><html><head><meta charset="utf8">
 <table><thead><tr><th>Project</th><th>Version</th><th>Git</th><th>Deps</th><th>Status</th></tr></thead><tbody id="rows"></tbody></table>
 <footer class="legend">🧭 hub · 📋 spec · ⚙️ core · 📦 libs · 🖥️ apps · 🌐 website · <img src="/asset/mdzip-mark" alt="mark"> mark &nbsp;·&nbsp; 🔒 private (public = no icon) &nbsp;&nbsp;║&nbsp;&nbsp; <span class="pill st-idle">idle</span> <span class="pill st-prog">in progress</span> <span class="pill st-test">awaiting test</span> <span class="pill st-commit">ready to commit</span> <span class="pill st-block">blocked</span></footer>
 <script>
+const REFRESH=5000;
+const meta={updated:'',count:0,err:null};
+const nextBoundary=()=>Math.ceil((Date.now()+1)/REFRESH)*REFRESH;
+let nextAt=nextBoundary();
+function renderMeta(){
+ const el=document.getElementById('meta');
+ if(meta.err){ el.textContent=meta.err; return; }
+ const s=Math.max(0,Math.ceil((nextAt-Date.now())/1000));
+ el.textContent='updated '+meta.updated+'  ·  '+meta.count+' repos  ·  refresh in '+s+'s';
+}
 async function load(){
  const r = await fetch('/api/status'); const d = await r.json();
- document.getElementById('meta').textContent = d.error ? d.error : ('updated '+new Date(d.generated).toLocaleTimeString()+'  ·  '+d.repos.length+' repos  ·  auto-refresh 5s');
+ if(d.error){ meta.err=d.error; } else { meta.err=null; meta.count=d.repos.length; }
  const typeOrder=['hub','spec','core','libs','apps','website','mark'];
  const typeIcon={hub:'🧭',spec:'📋',core:'⚙️',libs:'📦',apps:'🖥️',website:'🌐',mark:'🏷️'};
  const stateMeta={'idle':{label:'idle',cls:'st-idle'},'in-progress':{label:'in progress',cls:'st-prog'},'awaiting-test':{label:'awaiting test',cls:'st-test'},'ready-to-commit':{label:'ready to commit',cls:'st-commit'},'blocked':{label:'blocked',cls:'st-block'}};
@@ -206,13 +220,19 @@ async function load(){
  const rank = t => { const i=typeOrder.indexOf(t); return i<0?99:i; };
  const sorted=(d.repos||[]).slice().sort((a,b)=> rank(a.type)-rank(b.type) || a.name.localeCompare(b.name));
  document.getElementById('rows').innerHTML = sorted.map(rowHtml).join('') || '<tr><td colspan=5>No repos.</td></tr>';
+ renderMeta();
 }
-load(); setInterval(load, 5000);
+function stampAt(at){ meta.updated=new Date(at).toLocaleTimeString(); }
+function tick(){
+ if(Date.now()>=nextAt){ const at=nextAt; nextAt=nextBoundary(); stampAt(at); load(); }
+ renderMeta();
+}
+stampAt(Math.floor(Date.now()/REFRESH)*REFRESH); load(); setInterval(tick, 200);
 </script></body></html>`;
 
 const MIME = { '.svg': 'image/svg+xml', '.png': 'image/png', '.ico': 'image/x-icon', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.gif': 'image/gif' };
 
-http.createServer((req, res) => {
+http.createServer(async (req, res) => {
   if (req.url.startsWith('/asset/')) {
     const name = decodeURIComponent(req.url.slice(7).split('?')[0]);
     try {
@@ -230,8 +250,11 @@ http.createServer((req, res) => {
     } catch {}
     res.writeHead(404); res.end('not found');
   } else if (req.url.startsWith('/api/status')) {
+    let data;
+    try { data = await computeStatus(); }
+    catch (e) { data = { error: String(e.message || e), repos: [] }; }
     res.writeHead(200, { 'content-type': 'application/json' });
-    res.end(JSON.stringify(computeStatus()));
+    res.end(JSON.stringify(data));
   } else {
     res.writeHead(200, { 'content-type': 'text/html' });
     res.end(PAGE);
