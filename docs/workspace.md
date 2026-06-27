@@ -97,20 +97,20 @@ repos:
     path: ../mdzip-cli
     type: apps
     visibility: public
-    role: mdz command-line interface
+    role: mdz command-line interface (C#/.NET)
     remote: https://github.com/mdzip-project/mdzip-cli.git
     local_origin_stale: https://github.com/kylemwhite/mdz-cli.git  # redirects; update with git remote set-url
     publishes: []
-    upstreams: []   # no package.json — non-npm couplings not yet declared
+    upstreams: ["mdzip-core (NuGet)"]   # C# PackageReference, not npm — see Review notes
 
   - name: mdzip-core
     path: ../mdzip-core
     type: core
     visibility: public
-    role: Core implementation (non-JS) (confirm)
+    role: Core C# library (.NET) — published as the mdzip-core NuGet package
     remote: https://github.com/mdzip-project/mdzip-core.git
-    publishes: []
-    upstreams: []   # no package.json
+    publishes: ["mdzip-core (NuGet)"]
+    upstreams: []   # no package.json (version lives in the .csproj <Version>)
 
   - name: mdzip-spec
     path: ../mdzip-spec
@@ -185,5 +185,21 @@ during review:
    plan.
 
 4. **Roles marked `(confirm)`** were inferred from folder names/READMEs
-   with no clear description: `mdzip-core`, `mdzip-mark`, and the preview
-   handler `mdzip-win-prev`.
+   with no clear description: `mdzip-mark` and the preview handler
+   `mdzip-win-prev`. (`mdzip-core`'s role is now confirmed as the C#
+   core library.)
+
+5. **`mdzip-cli` → `mdzip-core` is a NuGet coupling.** `mdzip-cli`
+   consumes `mdzip-core` via a C# `PackageReference` (currently
+   `1.1.0`), not an npm dependency or a project reference. The dashboard
+   can't auto-compute "behind" for it (no `package.json`); the core
+   version lives in `mdzip-core/src/mdzip-core/mdzip-core.csproj`
+   (`<Version>`). This is the kind of non-npm coupling the
+   `DEPENDENCIES.json` enhancement is meant to make machine-readable.
+
+6. **.NET 10 upgrade — committed on branches, not merged.** Both repos have
+   an `upgrade/net10` branch at **v1.2.0**: `mdzip-core` multi-targets
+   `net8.0;net10.0` (`b4b392b`), `mdzip-cli` targets `net10.0` (`4dac987`).
+   Release ordering and the next step (publish core 1.2.0, then bump cli's
+   `mdzip-core` reference) are tracked in [roadmap.md](roadmap.md); the
+   integration-test recipe is in [dotnet-workflow.md](dotnet-workflow.md).
