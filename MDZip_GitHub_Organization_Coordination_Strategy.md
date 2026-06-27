@@ -106,7 +106,7 @@ hub. The owner keeps it open and uses it to decide what to do next.
     upstream has advanced past the version this project pins.
 -   **Status** — the project's workflow state as a coloured badge
     (`idle`, `in-progress`, `awaiting-test`, `ready-to-commit`,
-    `blocked`) plus a one-line description. Agents update this as they
+    `blocked`) plus the last action taken. Agents update this as they
     work, so the board reflects live progress.
 
 ### Form
@@ -130,8 +130,8 @@ service, no deployment — it only reads local repos.
 -   For couplings that are not npm dependencies (e.g. "viewer requires
     Manifest v1.1"), add an explicit machine-readable entry; this is the
     narrow case the `DEPENDENCIES.json` future enhancement covers.
--   **Status** and the description line come from each repo's
-    `STATUS.md` (`Status:` and `Next:`; see below). This is the only
+-   **Status** and the last-action line come from each repo's
+    `STATUS.md` (`Status:` and `Last:`; see below). This is the only
     hand-maintained input, kept current by agents per
     [AGENTS.md](AGENTS.md).
 
@@ -167,13 +167,13 @@ lines:
 
 ```
 Status: <idle | in-progress | awaiting-test | ready-to-commit | blocked>
-Next:   <one-line description shown on the dashboard>
+Last:   <one-line description of the most recent action>
 ```
 
 Agents keep these current as they work — see [AGENTS.md](AGENTS.md) for
 the protocol (when to set each state, e.g. `blocked` carries the
-question in `Next:`). Example: `Status: awaiting-test` /
-`Next: streaming export done — please test large files`.
+question in `Last:`). Example: `Status: awaiting-test` /
+`Last: streaming export done — please test large files`.
 
 ### `UPSTREAM_REQUESTS.md`
 

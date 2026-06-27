@@ -20,8 +20,11 @@ Every product repository has a `STATUS.md`. The workspace dashboard
 
 ```
 Status: <state>
-Next:   <one-line description shown on the dashboard>
+Last:   <one-line description of the most recent action, shown on the dashboard>
 ```
+
+`Last:` is the **last thing you did** (or are doing) in this repo — a
+running activity line, not a forward to-do.
 
 **You MUST keep `STATUS.md` current as you work.** It is the work board
 the human watches; a stale board is worse than none.
@@ -38,17 +41,17 @@ the human watches; a stale board is worse than none.
 
 ### When to update
 
-1. **On starting** work in a repo → set `Status: in-progress` and write
-   `Next:` describing what you're doing.
+1. **On starting** work in a repo → set `Status: in-progress` and set
+   `Last:` to what you're doing, e.g. `Implementing the export dialog`.
 2. **On finishing** → set `awaiting-test` (human should verify) or
-   `ready-to-commit` (already verified), and update `Next:` with the
-   outcome, e.g. `XYZ implemented; please test the export dialog`.
-3. **When blocked** → set `Status: blocked` and put the exact question in
-   `Next:`, e.g. `blocked — should viewer migrate to scoped @mdzip/core-js?`
-4. **After commit/merge** → set back to `idle` and clear `Next:` to a
-   placeholder.
+   `ready-to-commit` (already verified), and set `Last:` to what you just
+   did, e.g. `Implemented the export dialog`.
+3. **When blocked** → set `Status: blocked` and put the blocker/question
+   in `Last:`, e.g. `Blocked: should viewer migrate to scoped @mdzip/core-js?`
+4. **After commit/merge** → set `idle`, leaving `Last:` as the record of
+   the last completed action, e.g. `Committed the export dialog`.
 
-Keep `Next:` to one line. Longer notes can follow on later lines (the
+Keep `Last:` to one line. Longer notes can follow on later lines (the
 dashboard ignores them).
 
 ### Example
@@ -57,10 +60,10 @@ A request of *"Implement streaming export in mdzip-studio"* should move
 `mdzip-studio/STATUS.md` through:
 
 ```
-Status: in-progress      Next: Implementing streaming export
-Status: awaiting-test    Next: Streaming export done — please test large files
-Status: ready-to-commit  Next: Streaming export verified — ready to commit
-Status: idle             Next: (set the next action for mdzip-studio)
+Status: in-progress      Last: Implementing streaming export
+Status: awaiting-test    Last: Streaming export done — please test large files
+Status: ready-to-commit  Last: Streaming export verified — ready to commit
+Status: idle             Last: Committed streaming export
 ```
 
 ## Dependencies

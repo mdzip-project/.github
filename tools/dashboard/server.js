@@ -132,15 +132,15 @@ async function computeStatus() {
       depsState = firstParty === 0 ? 'none' : (behind.length ? 'behind' : 'up to date');
     }
 
-    // STATUS.md: "Status:" = workflow state, "Next:" = description, "Version:" = version fallback
-    let next = '', state = 'idle';
+    // STATUS.md: "Status:" = workflow state, "Last:" = latest action, "Version:" = version fallback
+    let last = '', state = 'idle';
     try {
       const status = fs.readFileSync(path.join(dir, 'STATUS.md'), 'utf8');
       const stm = status.match(/^\s*Status:\s*(.+?)\s*$/mi);
       if (stm) state = stm[1].toLowerCase().trim().replace(/\s+/g, '-');
-      const nm = status.match(/^\s*Next:\s*(.+?)\s*$/mi);
-      if (nm) next = nm[1];
-      else next = (status.split(/\r?\n/).find(l => l.trim() && !/^\s*(Status|Version):/i.test(l)) || '').replace(/^#*\s*/, '');
+      const lm = status.match(/^\s*Last:\s*(.+?)\s*$/mi) || status.match(/^\s*Next:\s*(.+?)\s*$/mi);
+      if (lm) last = lm[1];
+      else last = (status.split(/\r?\n/).find(l => l.trim() && !/^\s*(Status|Version|Last|Next):/i.test(l)) || '').replace(/^#*\s*/, '');
       if (!version) {
         const vm = status.match(/^\s*Version:\s*(.+?)\s*$/mi);
         if (vm) { version = vm[1].replace(/^v/, ''); vsrc = 'status'; }
@@ -154,7 +154,7 @@ async function computeStatus() {
       version, vsrc,
       git: git.ok ? (git.changes === 0 ? 'clean' : git.changes + ' changed') : (git.error || 'error'),
       gitDirty: git.changes > 0 || !git.ok,
-      deps: depsState, behind, next, state,
+      deps: depsState, behind, last, state,
     };
   }));
 
@@ -208,7 +208,7 @@ async function load(){
    else if(x.deps==='up to date'){deps='<span class="pill uptodate">up to date</span>';}
    else{deps='<span class="na">'+x.deps+'</span>';}
    const sm = stateMeta[x.state] || {label:x.state||'idle',cls:'st-idle'};
-   const stxt = x.next ? ' <span class="next">'+esc(x.next)+'</span>' : '';
+   const stxt = x.last ? ' <span class="next">'+esc(x.last)+'</span>' : '';
    const status = '<span class="pill '+sm.cls+'">'+sm.label+'</span>'+stxt;
    const ver = '<span class="ver">'+x.version+'</span>'+((x.vsrc==='tag'||x.vsrc==='status')?'<span class="detail"> '+x.vsrc+'</span>':'');
    const vis = x.visibility==='private' ? '<span class="vis" title="private">🔒</span>' : '';
