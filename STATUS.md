@@ -1,5 +1,5 @@
 Status: idle
-Last: Committed core parity docs after mdzip-core implementation
+Last: Dashboard repo names link to GitHub (new tab); hardened HTML escaping; added pause button
 
 <!-- The .github coordination hub. Dashboard reads Status:/Last:.
      Status: idle | in-progress | awaiting-test | ready-to-commit | blocked

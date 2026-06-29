@@ -17,13 +17,14 @@ MDZip is supported by a growing ecosystem of tools, including core libraries (C#
 For full documentation, format details, and deeper guides, visit [mdzip.org](https://mdzip.org).
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": false}}}%%
 flowchart BT
-    cli["mdzip-cli (Win/Mac/Linux)"]
-    studio["mdzip-studio (Desktop/Web)"]
-    vscode["mdzip-vscode (VS Code)"]
-    editor["@mdzip/editor (TS/JS + React/Vue/NG)"]
-    core["mdzip-core (C#/.NET)"]
-    corejs["@mdzip/core-js (TS/JS)"]
+    cli["mdzip-cli"]
+    studio["mdzip-studio"]
+    vscode["mdzip-vscode"]
+    editor["mdzip-editor"]
+    core["mdzip-core"]
+    corejs["mdzip-core-js"]
     spec["mdzip-spec"]
 
     cli --> core

@@ -61,6 +61,14 @@ function parseManifest(md) {
 // ---------- helpers ----------
 function readJSON(p) { try { return JSON.parse(fs.readFileSync(p, 'utf8')); } catch { return null; } }
 function repoDir(repo) { return path.resolve(GITHUB_ROOT, repo.path); }
+function repoRemoteUrl(repo) {
+  const remote = String(repo.remote || '').trim();
+  if (!remote) return '';
+  const ssh = remote.match(/^git@github\.com:(.+?)(?:\.git)?$/);
+  if (ssh) return 'https://github.com/' + ssh[1];
+  if (/^https:\/\/github\.com\//.test(remote)) return remote.replace(/\.git$/, '');
+  return remote;
+}
 
 async function gitStatus(dir) {
   try {
@@ -149,7 +157,7 @@ async function computeStatus() {
     if (!version) { version = '—'; vsrc = 'none'; }
 
     return {
-      name: repo.name, role: repo.role || '', branch: git.branch,
+      name: repo.name, role: repo.role || '', remote: repoRemoteUrl(repo), branch: git.branch,
       type: repo.type || '', visibility: repo.visibility || '', icon: repo.icon || '',
       version, vsrc,
       git: git.ok ? (git.changes === 0 ? 'clean' : git.changes + ' changed') : (git.error || 'error'),
@@ -166,8 +174,9 @@ const PAGE = `<!doctype html><html><head><meta charset="utf8">
 <title>MDZip Workspace</title>
 <style>
  body{font:14px/1.5 system-ui,Segoe UI,sans-serif;margin:0;background:#0d1117;color:#e6edf3;padding-bottom:66px}
- header{padding:14px 20px;border-bottom:1px solid #30363d;display:flex;justify-content:space-between;align-items:baseline}
+ header{padding:14px 20px;border-bottom:1px solid #30363d;display:flex;justify-content:space-between;align-items:baseline;gap:16px}
  h1{font-size:16px;margin:0} .meta{color:#8b949e;font-size:12px}
+ .head-actions{display:flex;align-items:center;gap:10px}.pause-btn{border:1px solid #30363d;background:#161b22;color:#e6edf3;border-radius:6px;padding:4px 8px;font:12px/1 system-ui,Segoe UI,sans-serif;cursor:pointer}.pause-btn:hover{border-color:#8b949e}
  table{width:100%;border-collapse:collapse} th,td{padding:9px 20px;text-align:left;border-bottom:1px solid #21262d;vertical-align:top}
  th{color:#8b949e;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.04em}
  .name{font-weight:600} .role{color:#8b949e;font-size:12px} .ver{font-variant-numeric:tabular-nums;font-weight:600}
@@ -175,12 +184,12 @@ const PAGE = `<!doctype html><html><head><meta charset="utf8">
  .clean{color:#3fb950} .dirty{color:#d29922} .behind{background:#3d2b00;color:#e3b341}
  .uptodate{background:#0f2e1a;color:#3fb950} .na{color:#6e7681} .next{color:#c9d1d9}
  .st-idle{background:#21262d;color:#8b949e} .st-prog{background:#0d2847;color:#58a6ff} .st-test{background:#3d2b00;color:#e3b341} .st-commit{background:#0f2e1a;color:#3fb950} .st-block{background:#3d1418;color:#f85149}
- .detail{color:#8b949e;font-size:12px} a{color:inherit}
+ .detail{color:#8b949e;font-size:12px} a{color:inherit}.name a{text-decoration:none}.name a:hover{text-decoration:underline}
  .tico{margin-right:7px} .tico-img{width:16px;height:16px;vertical-align:-3px;margin-right:7px} .vis{margin-left:7px;font-size:12px}
  footer.legend{position:fixed;left:0;right:0;bottom:0;background:#161b22;border-top:1px solid #30363d;padding:8px 20px;color:#8b949e;font-size:12px}
  footer.legend img{width:14px;height:14px;vertical-align:-3px;margin:0 2px}
 </style></head><body>
-<header><h1>MDZip Workspace</h1><span class="meta" id="meta">loading…</span></header>
+<header><h1>MDZip Workspace</h1><div class="head-actions"><span class="meta" id="meta">loading…</span><button class="pause-btn" id="pauseBtn" type="button" title="Pause auto-refresh">Pause</button></div></header>
 <table><thead><tr><th>Project</th><th>Version</th><th>Git</th><th>Deps</th><th>Status</th></tr></thead><tbody id="rows"></tbody></table>
 <footer class="legend">🧭 hub · 📋 spec · ⚙️ core · 📦 libs · 🖥️ apps · 🌐 website · <img src="/asset/mdzip-mark" alt="mark"> mark &nbsp;·&nbsp; 🔒 private (public = no icon) &nbsp;&nbsp;║&nbsp;&nbsp; <span class="pill st-idle">idle</span> <span class="pill st-prog">in progress</span> <span class="pill st-test">awaiting test</span> <span class="pill st-commit">ready to commit</span> <span class="pill st-block">blocked</span></footer>
 <script>
@@ -188,9 +197,11 @@ const REFRESH=5000;
 const meta={updated:'',count:0,err:null};
 const nextBoundary=()=>Math.ceil((Date.now()+1)/REFRESH)*REFRESH;
 let nextAt=nextBoundary();
+let paused=false;
 function renderMeta(){
  const el=document.getElementById('meta');
  if(meta.err){ el.textContent=meta.err; return; }
+ if(paused){ el.textContent='updated '+meta.updated+'  ·  '+meta.count+' repos  ·  paused'; return; }
  const s=Math.max(0,Math.ceil((nextAt-Date.now())/1000));
  el.textContent='updated '+meta.updated+'  ·  '+meta.count+' repos  ·  refresh in '+s+'s';
 }
@@ -200,7 +211,8 @@ async function load(){
  const typeOrder=['hub','spec','core','libs','apps','website','mark'];
  const typeIcon={hub:'🧭',spec:'📋',core:'⚙️',libs:'📦',apps:'🖥️',website:'🌐',mark:'🏷️'};
  const stateMeta={'idle':{label:'idle',cls:'st-idle'},'in-progress':{label:'in progress',cls:'st-prog'},'awaiting-test':{label:'awaiting test',cls:'st-test'},'ready-to-commit':{label:'ready to commit',cls:'st-commit'},'blocked':{label:'blocked',cls:'st-block'}};
- const esc = s => s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+ const esc = s => String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+ const attr = s => esc(s).replace(/"/g,'&quot;');
  const rowHtml = x => {
    const git = '<span class="'+(x.gitDirty?'dirty':'clean')+'">'+x.git+'</span><span class="detail"> @'+x.branch+'</span>';
    let deps;
@@ -215,7 +227,10 @@ async function load(){
    const tico = x.icon
      ? '<img class="tico-img" title="'+(x.type||'')+'" alt="'+(x.type||'')+'" src="/asset/'+encodeURIComponent(x.name)+'">'
      : '<span class="tico" title="'+(x.type||'?')+'">'+(typeIcon[x.type]||'•')+'</span>';
-   return '<tr><td><div class="name">'+tico+x.name+vis+'</div><div class="role">'+x.role+'</div></td><td>'+ver+'</td><td>'+git+'</td><td>'+deps+'</td><td>'+status+'</td></tr>';
+   const name = x.remote
+     ? '<a href="'+attr(x.remote)+'" target="_blank" rel="noopener noreferrer">'+esc(x.name)+'</a>'
+     : esc(x.name);
+   return '<tr><td><div class="name">'+tico+name+vis+'</div><div class="role">'+esc(x.role)+'</div></td><td>'+ver+'</td><td>'+git+'</td><td>'+deps+'</td><td>'+status+'</td></tr>';
  };
  const rank = t => { const i=typeOrder.indexOf(t); return i<0?99:i; };
  const sorted=(d.repos||[]).slice().sort((a,b)=> rank(a.type)-rank(b.type) || a.name.localeCompare(b.name));
@@ -224,9 +239,18 @@ async function load(){
 }
 function stampAt(at){ meta.updated=new Date(at).toLocaleTimeString(); }
 function tick(){
+ if(paused){ renderMeta(); return; }
  if(Date.now()>=nextAt){ const at=nextAt; nextAt=nextBoundary(); stampAt(at); load(); }
  renderMeta();
 }
+document.getElementById('pauseBtn').addEventListener('click',()=>{
+ paused=!paused;
+ const btn=document.getElementById('pauseBtn');
+ btn.textContent=paused?'Play':'Pause';
+ btn.title=paused?'Resume auto-refresh':'Pause auto-refresh';
+ if(!paused){ nextAt=nextBoundary(); }
+ renderMeta();
+});
 stampAt(Math.floor(Date.now()/REFRESH)*REFRESH); load(); setInterval(tick, 200);
 </script></body></html>`;
 
