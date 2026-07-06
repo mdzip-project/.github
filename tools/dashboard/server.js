@@ -14,6 +14,7 @@ const gitOut = (dir, args) => execFileP('git', ['-C', dir, ...args], { encoding:
 const PORT = process.env.PORT || 7777;
 const GITHUB_ROOT = path.resolve(__dirname, '..', '..');         // the .github repo root
 const MANIFEST = path.join(GITHUB_ROOT, 'docs', 'workspace.md');
+const LINKS_FILE = path.join(__dirname, 'links.json');
 
 // ---------- minimal YAML-subset parser (tailored to workspace.md) ----------
 function stripComment(line) {
@@ -60,6 +61,9 @@ function parseManifest(md) {
 
 // ---------- helpers ----------
 function readJSON(p) { try { return JSON.parse(fs.readFileSync(p, 'utf8')); } catch { return null; } }
+// Re-read on every call (like the workspace manifest) so editing links.json
+// takes effect on the next poll with no server restart.
+function readQuickLinks() { return readJSON(LINKS_FILE) || []; }
 function repoDir(repo) { return path.resolve(GITHUB_ROOT, repo.path); }
 function repoRemoteUrl(repo) {
   const remote = String(repo.remote || '').trim();
@@ -68,6 +72,41 @@ function repoRemoteUrl(repo) {
   if (ssh) return 'https://github.com/' + ssh[1];
   if (/^https:\/\/github\.com\//.test(remote)) return remote.replace(/\.git$/, '');
   return remote;
+}
+
+// ---------- release / package badges (mirrors mdzip.org/project.html) ----------
+// Same shields.io content shown on the mdzip.org "The Project" page. Keyed by
+// repo name: a GitHub release badge (for repos that publish releases) plus the
+// distribution badge(s) from the project page's "Package" column.
+const SHIELD = 'https://img.shields.io';
+const releaseBadge = name => ({
+  img: `${SHIELD}/github/v/release/mdzip-project/${name}?logo=github&logoColor=white&label=release`,
+  href: `https://github.com/mdzip-project/${name}/releases/latest`,
+  alt: `Latest release for ${name}`,
+});
+const npmBadge = pkg => ({
+  img: `${SHIELD}/npm/v/${pkg}`,
+  href: `https://www.npmjs.com/package/${pkg}`,
+  alt: `NPM package version for ${pkg}`,
+});
+// repos that show a GitHub release badge on the project page
+const RELEASE_REPOS = new Set([
+  'mdzip-spec', 'mdzip-core', 'mdzip-core-js', 'mdzip-editor',
+  'mdzip-cli', 'mdzip-vscode', 'mdzip-studio',
+]);
+// the project page's "Package" column, per repo
+const PACKAGE_BADGES = {
+  'mdzip-core': [{ img: `${SHIELD}/nuget/v/mdzip-core?logo=nuget`, href: 'https://www.nuget.org/packages/mdzip-core', alt: 'NuGet package version for mdzip-core' }],
+  'mdzip-core-js': [npmBadge('@mdzip/core-js')],
+  'mdzip-editor': [npmBadge('@mdzip/editor'), npmBadge('@mdzip/editor-react'), npmBadge('@mdzip/editor-vue'), npmBadge('@mdzip/editor-ng')],
+  'mdzip-vscode': [{ img: `${SHIELD}/badge/VS%20Code-Marketplace-blue?logo=visualstudiocode&logoColor=white`, href: 'https://marketplace.visualstudio.com/items?itemName=mdzip-project.mdzip-vscode', alt: 'MDZip on the VS Code Marketplace' }],
+  'mdzip-studio': [{ img: `${SHIELD}/badge/Download-Windows-blue?logo=windows&logoColor=white`, href: 'https://mdzip.org/studio.html', alt: 'Download for Windows' }],
+};
+function repoBadges(name) {
+  const badges = [];
+  if (RELEASE_REPOS.has(name)) badges.push(releaseBadge(name));
+  if (PACKAGE_BADGES[name]) badges.push(...PACKAGE_BADGES[name]);
+  return badges;
 }
 
 async function gitStatus(dir) {
@@ -163,10 +202,11 @@ async function computeStatus() {
       git: git.ok ? (git.changes === 0 ? 'clean' : git.changes + ' changed') : (git.error || 'error'),
       gitDirty: git.changes > 0 || !git.ok,
       deps: depsState, behind, last, state,
+      badges: repoBadges(repo.name),
     };
   }));
 
-  return { generated: new Date().toISOString(), root: GITHUB_ROOT, repos: rows };
+  return { generated: new Date().toISOString(), root: GITHUB_ROOT, repos: rows, links: readQuickLinks() };
 }
 
 // ---------- HTML ----------
@@ -177,6 +217,12 @@ const PAGE = `<!doctype html><html><head><meta charset="utf8">
  header{padding:14px 20px;border-bottom:1px solid #30363d;display:flex;justify-content:space-between;align-items:baseline;gap:16px}
  h1{font-size:16px;margin:0} .meta{color:#8b949e;font-size:12px}
  .head-actions{display:flex;align-items:center;gap:10px}.pause-btn{border:1px solid #30363d;background:#161b22;color:#e6edf3;border-radius:6px;padding:4px 8px;font:12px/1 system-ui,Segoe UI,sans-serif;cursor:pointer}.pause-btn:hover{border-color:#8b949e}
+ .links-menu-wrap{position:relative}
+ .links-menu{position:absolute;right:0;top:calc(100% + 6px);min-width:240px;max-height:70vh;overflow-y:auto;background:#161b22;border:1px solid #30363d;border-radius:6px;box-shadow:0 8px 24px rgba(0,0,0,.4);padding:6px;z-index:10}
+ .links-menu h4{margin:8px 6px 2px;color:#8b949e;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+ .links-menu h4:first-child{margin-top:2px}
+ .links-menu a{display:block;padding:5px 8px;border-radius:4px;color:#e6edf3;font-size:13px;text-decoration:none}
+ .links-menu a:hover,.links-menu a:focus-visible{background:#21262d;outline:none}
  table{width:100%;border-collapse:collapse} th,td{padding:9px 20px;text-align:left;border-bottom:1px solid #21262d;vertical-align:top}
  th{color:#8b949e;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.04em}
  .name{font-weight:600} .role{color:#8b949e;font-size:12px} .ver{font-variant-numeric:tabular-nums;font-weight:600}
@@ -185,11 +231,12 @@ const PAGE = `<!doctype html><html><head><meta charset="utf8">
  .uptodate{background:#0f2e1a;color:#3fb950} .na{color:#6e7681} .next{color:#c9d1d9}
  .st-idle{background:#21262d;color:#8b949e} .st-prog{background:#0d2847;color:#58a6ff} .st-test{background:#3d2b00;color:#e3b341} .st-commit{background:#0f2e1a;color:#3fb950} .st-block{background:#3d1418;color:#f85149}
  .detail{color:#8b949e;font-size:12px} a{color:inherit}.name a{text-decoration:none}.name a:hover{text-decoration:underline}
+ .badges{margin-top:6px;display:flex;flex-wrap:wrap;gap:5px}.badges img{height:20px;display:block}
  .tico{margin-right:7px} .tico-img{width:16px;height:16px;vertical-align:-3px;margin-right:7px} .vis{margin-left:7px;font-size:12px}
  footer.legend{position:fixed;left:0;right:0;bottom:0;background:#161b22;border-top:1px solid #30363d;padding:8px 20px;color:#8b949e;font-size:12px}
  footer.legend img{width:14px;height:14px;vertical-align:-3px;margin:0 2px}
 </style></head><body>
-<header><h1>MDZip Workspace</h1><div class="head-actions"><span class="meta" id="meta">loading…</span><button class="pause-btn" id="pauseBtn" type="button" title="Pause auto-refresh">Pause</button></div></header>
+<header><h1>MDZip Workspace</h1><div class="head-actions"><span class="meta" id="meta">loading…</span><div class="links-menu-wrap"><button class="pause-btn" id="linksBtn" type="button" aria-haspopup="true" aria-expanded="false">Links ▾</button><div class="links-menu" id="linksMenu" role="menu" hidden></div></div><button class="pause-btn" id="pauseBtn" type="button" title="Pause auto-refresh">Pause</button></div></header>
 <table><thead><tr><th>Project</th><th>Version</th><th>Git</th><th>Deps</th><th>Status</th></tr></thead><tbody id="rows"></tbody></table>
 <footer class="legend">🧭 hub · 📋 spec · ⚙️ core · 📦 libs · 🖥️ apps · 🌐 website · <img src="/asset/mdzip-mark" alt="mark"> mark &nbsp;·&nbsp; 🔒 private (public = no icon) &nbsp;&nbsp;║&nbsp;&nbsp; <span class="pill st-idle">idle</span> <span class="pill st-prog">in progress</span> <span class="pill st-test">awaiting test</span> <span class="pill st-commit">ready to commit</span> <span class="pill st-block">blocked</span></footer>
 <script>
@@ -221,7 +268,9 @@ async function load(){
    else{deps='<span class="na">'+x.deps+'</span>';}
    const sm = stateMeta[x.state] || {label:x.state||'idle',cls:'st-idle'};
    const stxt = x.last ? ' <span class="next">'+esc(x.last)+'</span>' : '';
-   const status = '<span class="pill '+sm.cls+'">'+sm.label+'</span>'+stxt;
+   const badges = (x.badges||[]).map(b=>'<a href="'+attr(b.href)+'" target="_blank" rel="noopener noreferrer"><img class="badge" src="'+attr(b.img)+'" alt="'+attr(b.alt)+'" loading="lazy"></a>').join(' ');
+   const badgeLine = badges ? '<div class="badges">'+badges+'</div>' : '';
+   const status = '<span class="pill '+sm.cls+'">'+sm.label+'</span>'+stxt+badgeLine;
    const ver = '<span class="ver">'+x.version+'</span>'+((x.vsrc==='tag'||x.vsrc==='status')?'<span class="detail"> '+x.vsrc+'</span>':'');
    const vis = x.visibility==='private' ? '<span class="vis" title="private">🔒</span>' : '';
    const tico = x.icon
@@ -235,6 +284,8 @@ async function load(){
  const rank = t => { const i=typeOrder.indexOf(t); return i<0?99:i; };
  const sorted=(d.repos||[]).slice().sort((a,b)=> rank(a.type)-rank(b.type) || a.name.localeCompare(b.name));
  document.getElementById('rows').innerHTML = sorted.map(rowHtml).join('') || '<tr><td colspan=5>No repos.</td></tr>';
+ const linkCatHtml = c => '<h4>'+esc(c.cat)+'</h4>'+(c.items||[]).map(i=>'<a href="'+attr(i.href)+'" target="_blank" rel="noopener noreferrer" role="menuitem">'+esc(i.label)+'</a>').join('');
+ document.getElementById('linksMenu').innerHTML = (d.links||[]).map(linkCatHtml).join('');
  renderMeta();
 }
 function stampAt(at){ meta.updated=new Date(at).toLocaleTimeString(); }
@@ -251,6 +302,22 @@ document.getElementById('pauseBtn').addEventListener('click',()=>{
  if(!paused){ nextAt=nextBoundary(); }
  renderMeta();
 });
+function closeLinksMenu(){
+ const menu=document.getElementById('linksMenu');
+ if(menu.hidden) return;
+ menu.hidden=true;
+ document.getElementById('linksBtn').setAttribute('aria-expanded','false');
+}
+document.getElementById('linksBtn').addEventListener('click',(e)=>{
+ e.stopPropagation();
+ const btn=document.getElementById('linksBtn');
+ const menu=document.getElementById('linksMenu');
+ const opening=menu.hidden;
+ menu.hidden=!opening;
+ btn.setAttribute('aria-expanded', opening?'true':'false');
+});
+document.addEventListener('click', closeLinksMenu);
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeLinksMenu(); });
 stampAt(Math.floor(Date.now()/REFRESH)*REFRESH); load(); setInterval(tick, 200);
 </script></body></html>`;
 

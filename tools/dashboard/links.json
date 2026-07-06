@@ -1,0 +1,30 @@
+[
+  { "cat": "GitHub", "items": [
+    { "label": "Organization", "href": "https://github.com/mdzip-project" },
+    { "label": "All repositories", "href": "https://github.com/orgs/mdzip-project/repositories" }
+  ] },
+  { "cat": "npm", "items": [
+    { "label": "@mdzip/core-js", "href": "https://www.npmjs.com/package/@mdzip/core-js" },
+    { "label": "@mdzip/editor", "href": "https://www.npmjs.com/package/@mdzip/editor" },
+    { "label": "@mdzip/editor-react", "href": "https://www.npmjs.com/package/@mdzip/editor-react" },
+    { "label": "@mdzip/editor-vue", "href": "https://www.npmjs.com/package/@mdzip/editor-vue" },
+    { "label": "@mdzip/editor-ng", "href": "https://www.npmjs.com/package/@mdzip/editor-ng" }
+  ] },
+  { "cat": "NuGet", "items": [
+    { "label": "mdzip-core", "href": "https://www.nuget.org/packages/mdzip-core" }
+  ] },
+  { "cat": "VS Code Marketplace", "items": [
+    { "label": "MDZip (.mdz) Editor", "href": "https://marketplace.visualstudio.com/items?itemName=mdzip-project.mdzip-vscode" },
+    { "label": "Publisher: mdzip-project", "href": "https://marketplace.visualstudio.com/publishers/mdzip-project" },
+    { "label": "Manage publisher", "href": "https://marketplace.visualstudio.com/manage/publishers/mdzip-project" }
+  ] },
+  { "cat": "winget", "items": [
+    { "label": "MDZip.Cli", "href": "https://winstall.app/apps/MDZip.Cli" },
+    { "label": "MDZip.Studio", "href": "https://winstall.app/apps/MDZip.Studio" }
+  ] },
+  { "cat": "Website", "items": [
+    { "label": "mdzip.org", "href": "https://mdzip.org" },
+    { "label": "Project status", "href": "https://mdzip.org/project.html" },
+    { "label": "Studio download", "href": "https://mdzip.org/studio.html" }
+  ] }
+]
