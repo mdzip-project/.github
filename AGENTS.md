@@ -73,6 +73,24 @@ Status: ready-to-commit  Last: Streaming export verified — ready to commit
 Status: idle             Last: Committed streaming export
 ```
 
+## Project conventions
+
+- **Visual theme: black/white/greyscale, color for emphasis only.** The
+  project is moving to a greyscale theme across all properties
+  (mdzip.org, dashboard, editor demo, Studio, brand assets). Don't
+  retrofit existing UI, but any **new** UI, page, theme, or visual asset
+  defaults to greyscale, with color reserved for sparing emphasis
+  (status indicators, calls to action, highlights).
+- **Where docs go.** This hub repo is **public**. Its `docs/` folder is
+  for engineering status and reference only. Conceptual design work,
+  strategy, market analysis, and scratchpad notes belong in the
+  **private** `mdzip-project/planning` repo (local:
+  `../planning`) — never here.
+- **Durable notes must be agent-agnostic.** Record project-wide facts,
+  conventions, and decisions in shared files any agent can discover
+  (this file, `docs/`, or the `planning` repo) — not in
+  agent-specific memory stores.
+
 ## Dependencies
 
 A consumer is **behind** when the version it pins for a first-party
