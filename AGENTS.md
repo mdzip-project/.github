@@ -90,6 +90,13 @@ Status: idle             Last: Committed streaming export
   conventions, and decisions in shared files any agent can discover
   (this file, `docs/`, or the `planning` repo) — not in
   agent-specific memory stores.
+- **Author like a non-developer.** When working on mdzip.org (and the
+  future docs site) content and authoring workflows, approach them as
+  a non-technical author would: prefer workflows that don't require
+  git, text editors, or build scripts, and when a task forces
+  developer skills anyway, flag it as friction (logged in the
+  `planning` repo's strategy findings) instead of silently working
+  around it.
 
 ## Dependencies
 
