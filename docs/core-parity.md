@@ -4,14 +4,20 @@ Method-level map of the gap between the C# core and the TypeScript core,
 and the phased plan to close it. This is the detail behind the parity entry
 in [roadmap.md](roadmap.md).
 
-- **Baseline:** `mdzip-core` **1.2.0** (net10, just upgraded) · `mdzip-core-js` **1.3.2**
-- **Target:** `mdzip-core` **1.3.0** = parity, to line up with core-js 1.3.x
-- **Core implementation status:** Phases 1-6 implemented and locally verified in
-  `mdzip-core` on the parity branch stack ending at `parity/phase6-workspace`
-  (`7ca50b7`). Latest verification: `dotnet test mdz-core.slnx -c Release`
-  passed 68/68 tests for both `net8.0` and `net10.0`.
-- **Remaining cross-repo work:** expose the new core capabilities in
-  `mdzip-cli` after the core package/release path is chosen.
+- **Status: parity shipped and exposed in the CLI.** `mdzip-core` **1.3.3**
+  (parity landed at `v1.3.0`, plus the 1.3.3 raw-`<img>` orphan-detection fix)
+  · `mdzip-core-js` **1.3.3** · `mdzip-cli` **1.3.0** already ships the new
+  commands (`cat`, `assets`, `manifest`, `workspace`, `info`) and consumes
+  `mdzip-core 1.3.3` via `PackageReference`.
+- **Outstanding: branch not merged.** The releases above came from the parity
+  branch stack ending at `parity/phase6-workspace` (`7ca50b7`), which is
+  **still not merged into `main`** — `main` sits at the pre-parity commit
+  `7dfda11` (2026-04-12). Merge the stack so the default branch matches what's
+  actually released.
+- **Core implementation status:** Phases 1-6 implemented and verified in
+  `mdzip-core` on the parity branch stack. Latest verification:
+  `dotnet test mdz-core.slnx -c Release` passed 68/68 tests for both
+  `net8.0` and `net10.0`.
 - Legend: ✅ present · ⚠️ partial · ❌ missing in C#
 
 The original C# public surface was `MdzArchive` (10 static methods): `Create`,
@@ -31,8 +37,8 @@ editing, batch mutation, packaging, asset, orphan-analysis, and workspace APIs.
 | **5** assets/orphan detection | Implemented and tested | `afa37c0` |
 | **6** workspace | Implemented and tested | `7ca50b7` |
 
-CLI exposure is still pending and should follow the NuGet/local-feed workflow in
-[dotnet-workflow.md](dotnet-workflow.md).
+CLI exposure shipped in `mdzip-cli` `v1.3.0` (see its `CHANGELOG.md`), using the
+NuGet/local-feed workflow in [dotnet-workflow.md](dotnet-workflow.md).
 
 ## API comparison
 
@@ -121,7 +127,8 @@ anytime — fold it into Phase 1's CLI work.
 
 ## Versioning
 
-- `1.2.0` — net10 (done).
-- `1.3.0` — parity complete, released together with cli, lining up with
-  core-js 1.3.x. Phases land as internal progress; cut `1.3.0` at the end
-  (or ship intermediate `1.2.x` previews — owner's call).
+- `1.3.0` — parity complete (folding in the net10 multi-target work), released
+  together with `mdzip-cli` `1.3.0`, lining up with core-js 1.3.x. Done.
+- `1.3.3` — raw-`<img>` orphan-detection fix, released together with
+  `mdzip-core-js` 1.3.3. Done; `mdzip-cli` consumes it without needing its own
+  version bump.

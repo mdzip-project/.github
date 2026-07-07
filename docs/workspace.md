@@ -21,9 +21,9 @@ lower than the producing repo's current `package.json` `version`.
 
 | Package | Produced by | Current version |
 |---|---|---|
-| `@mdzip/core-js` | `mdzip-core-js` | 1.3.2 |
-| `@mdzip/editor` | `mdzip-editor` | 1.3.12 |
-| `@mdzip/editor-ng` | `mdzip-editor` | 1.3.12 |
+| `@mdzip/core-js` | `mdzip-core-js` | 1.3.3 |
+| `@mdzip/editor` | `mdzip-editor` | 1.3.15 |
+| `@mdzip/editor-ng` | `mdzip-editor` | 1.3.15 |
 
 ## Repositories
 
