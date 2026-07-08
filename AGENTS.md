@@ -75,6 +75,12 @@ Status: idle             Last: Committed streaming export
 
 ## Project conventions
 
+- **Batch commits; the owner reviews before anything goes live.** Do
+  not commit/push after each change. Accumulate work, keep `STATUS.md`
+  current, and present a summary for review; commit and push only when
+  the owner says so. This matters doubly for repos that deploy on push
+  to `main` (mdzip.org) — push means production.
+
 - **Visual theme: black/white/greyscale, color for emphasis only.** The
   project is moving to a greyscale theme across all properties
   (mdzip.org, dashboard, editor demo, Studio, brand assets). Don't
