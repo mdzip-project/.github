@@ -9,11 +9,9 @@ in [roadmap.md](roadmap.md).
   · `mdzip-core-js` **1.3.3** · `mdzip-cli` **1.3.0** already ships the new
   commands (`cat`, `assets`, `manifest`, `workspace`, `info`) and consumes
   `mdzip-core 1.3.3` via `PackageReference`.
-- **Outstanding: branch not merged.** The releases above came from the parity
-  branch stack ending at `parity/phase6-workspace` (`7ca50b7`), which is
-  **still not merged into `main`** — `main` sits at the pre-parity commit
-  `7dfda11` (2026-04-12). Merge the stack so the default branch matches what's
-  actually released.
+- **Merged 2026-07-08.** The parity branch stack was fast-forwarded into
+  `main` (now at `f782bc3`, v1.3.3) and the working branches deleted; the
+  default branch matches what's released. Nothing outstanding.
 - **Core implementation status:** Phases 1-6 implemented and verified in
   `mdzip-core` on the parity branch stack. Latest verification:
   `dotnet test mdz-core.slnx -c Release` passed 68/68 tests for both
