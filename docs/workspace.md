@@ -150,6 +150,7 @@ Moved to `../archive/` on 2026-06-26 and excluded from the dashboard:
 | `mdzip-viewer` | `mdzip-project/mdzip-viewer` (npm viewer lib) | Archived; was the only consumer of the legacy unscoped `mdzip-core-js` dep |
 | `mdzip-win-preview` | `mdzip-project/mdzip-win-preview` | Redundant preview handler; GitHub repo archived (never published) |
 | `mdzip-studio-temp` | (not a git repo) | Scratch copy of studio |
+| `mdz-win-preview` | (not a git repo; was `F:\Code\1 Projects\mdz-win-preview`) | Failed preview-handler experiment (LocalServer32 + WebView2 at once); moved 2026-07-08. Post-mortem: `mdzip-win-prev/docs/preview-handler-lessons.md` |
 
 ## Review notes
 
