@@ -6,13 +6,7 @@ Single-repo features live in that repo. See
 
 ## In progress
 
-### Merge the core-parity branch stack into `main`
-`mdzip-core`'s parity work shipped directly from the `parity/phase6-workspace`
-branch — `v1.3.0` and `v1.3.3` are tagged there — but `main` was never updated
-and still sits at the pre-parity commit `7dfda11` (2026-04-12). Merge the
-branch stack (`parity/phase1-read-inspect` … `parity/phase6-workspace`) into
-`main` so the default branch matches what's actually released. Details:
-[core-parity.md](core-parity.md).
+*(nothing currently — see Planned)*
 
 ## Planned
 
@@ -34,6 +28,13 @@ specification independent.
   which points at this entry as the documented plan.
 
 ## Done
+
+### Parity branch stack merged into `main` — 2026-07-08
+`mdzip-core`'s `main` fast-forwarded from the pre-parity `7dfda11`
+(2026-04-12) to `f782bc3` (v1.3.3); 69/69 tests pass on both `net8.0`
+and `net10.0`. The `parity/phase1…phase6` and `upgrade/net10` branches
+(all contained in the merged history) were deleted locally and on
+origin. The default branch now matches what's released.
 
 ### Core parity: C# core → core-js → CLI — 2026-06-29
 Brought `mdzip-core` (C#) to functional parity with `mdzip-core-js` (TS) and
