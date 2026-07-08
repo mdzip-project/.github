@@ -14,6 +14,25 @@ branch stack (`parity/phase1-read-inspect` … `parity/phase6-workspace`) into
 `main` so the default branch matches what's actually released. Details:
 [core-parity.md](core-parity.md).
 
+## Planned
+
+### Related-format interoperability (importers)
+Acknowledge prior art, compete on ecosystem, cooperate on interop —
+build importers rather than compatibility hacks, keeping the MDZip
+specification independent.
+
+- **`mdz import`** in `mdzip-cli`, TextBundle/TextPack first (the
+  closest conceptual relative), with pluggable importers later
+  (markdown folders, generic ZIPs of markdown).
+- **Evaluate mutual compatibility** with the independent Rust MDZ
+  project (`wflixu/mdz` / `mdz-rs`), whose layout converges on the
+  same design (ZIP, `index.md`, `manifest.json`, same extension).
+- **Repos:** `mdzip-cli` (import command), `mdzip-core`/`mdzip-core-js`
+  (format readers), references `mdzip-spec`.
+- Public positioning lives at
+  [mdzip.org/docs/related-formats.html](https://mdzip.org/docs/related-formats.html),
+  which points at this entry as the documented plan.
+
 ## Done
 
 ### Core parity: C# core → core-js → CLI — 2026-06-29
