@@ -23,9 +23,10 @@ dotnet publish src/mdz.Cli/mdz.Cli.csproj -c Release -r win-x64 --self-contained
 ```
 
 ## Integration-testing cli against an UNRELEASED core
-`mdzip-cli` consumes `mdzip-core` via a NuGet `PackageReference`, so local core
-changes do **not** flow into cli until packed/published. To test cli against a
-local core build:
+`mdzip-cli` consumes `MDZip.Core` (NuGet ID; renamed from `mdzip-core`
+2026-07-08, see [nuget-mdzip-core-rename.md](nuget-mdzip-core-rename.md))
+via a NuGet `PackageReference`, so local core changes do **not** flow into
+cli until packed/published. To test cli against a local core build:
 
 1. **Pack** local core to a local feed with a distinct version:
    ```sh
@@ -36,10 +37,11 @@ local core build:
    ```xml
    <add key="local-core" value="../.local-feed" />
    ```
-3. **Bump** cli's `mdzip-core` `PackageReference` to `<X>-local` in
+3. **Bump** cli's `MDZip.Core` `PackageReference` to `<X>-local` in
    `mdz.csproj` and `mdz.Tests.csproj`.
 4. **Test:** `dotnet test mdz-cli.slnx -c Release`. Confirm restore resolved
-   `mdzip-core/<X>-local` (grep `src/mdz/obj/project.assets.json`).
+   `mdzip.core/<X>-local` (grep `src/mdz/obj/project.assets.json` — NuGet
+   lowercases the package ID in the resolved asset path).
 5. **REVERT before committing:** remove the `nuget.config` source line, reset the
    `PackageReference` versions, delete `../.local-feed`.
 
@@ -48,7 +50,7 @@ local core build:
 
 ## Release ordering (core → cli)
 Because of the NuGet coupling, a coordinated version bump releases in order:
-1. Merge + tag `mdzip-core` `vX.Y.Z` → its `publish.yml` pushes `mdzip-core X.Y.Z`
-   to NuGet.
-2. Bump cli's `mdzip-core` `PackageReference` to `X.Y.Z`, then merge + tag
+1. Merge + tag `mdzip-core` `vX.Y.Z` → its `publish.yml` pushes `MDZip.Core
+   X.Y.Z` to NuGet (Trusted Publishing/OIDC, no API key).
+2. Bump cli's `MDZip.Core` `PackageReference` to `X.Y.Z`, then merge + tag
    `mdzip-cli` `vX.Y.Z`.

@@ -87,8 +87,8 @@ and the winget takedown path.)
 
 ## MDZip action checklist
 
-- [ ] Decide .NET package ID scheme: adopt dotted **`MDZip.Core`** (recommended) vs. keep `mdzip-core`.
-- [ ] Ensure packages set `license` (metadata element) and embedded `icon`, with consistent `author = MDZip Project`.
-- [ ] Email account@nuget.org to reserve **`MDZip`** (private, no delegation) under our owner account.
+- [x] Decide .NET package ID scheme: adopt dotted **`MDZip.Core`** (recommended) vs. keep `mdzip-core`. — Done 2026-07-08: published `MDZip.Core` 1.4.0 under the `MDZip` NuGet org; legacy `mdzip-core` to be deprecated (Phase 5). Full plan: [nuget-mdzip-core-rename.md](nuget-mdzip-core-rename.md).
+- [x] Ensure packages set `license` (metadata element) and embedded `icon`, with consistent `author = MDZip Project`. — Done 2026-07-08 (`MDZip.Core` 1.4.0: `PackageLicenseExpression=Apache-2.0`, embedded `icon.png`, `Authors=MDZip Project`).
+- [x] Email account@nuget.org to reserve **`MDZip`** (private, no delegation) under our owner account. — Sent under the `MDZip` org; nuget.org replied agreeing to reserve it.
 - [ ] (Optional but high-leverage) Pursue an **"MDZip" trademark** — strengthens NuGet disputes *and* winget impersonation/takedowns.
-- [ ] Record the outcome + reserved-prefix date back in this doc.
+- [x] Record the outcome + reserved-prefix date back in this doc. — **Reserved.** Live-verified 2026-07-09: `MDZip.Core`'s nuget.org package page shows the "Prefix Reserved" badge.

@@ -11,7 +11,8 @@
     { "label": "@mdzip/editor-ng", "href": "https://www.npmjs.com/package/@mdzip/editor-ng" }
   ] },
   { "cat": "NuGet", "items": [
-    { "label": "mdzip-core", "href": "https://www.nuget.org/packages/mdzip-core" }
+    { "label": "MDZip.Core", "href": "https://www.nuget.org/packages/MDZip.Core" },
+    { "label": "mdzip-core (legacy)", "href": "https://www.nuget.org/packages/mdzip-core" }
   ] },
   { "cat": "VS Code Marketplace", "items": [
     { "label": "MDZip (.mdz) Editor", "href": "https://marketplace.visualstudio.com/items?itemName=mdzip-project.mdzip-vscode" },

@@ -101,15 +101,15 @@ repos:
     remote: https://github.com/mdzip-project/mdzip-cli.git
     local_origin_stale: https://github.com/kylemwhite/mdz-cli.git  # redirects; update with git remote set-url
     publishes: []
-    upstreams: ["mdzip-core (NuGet)"]   # C# PackageReference, not npm — see Review notes
+    upstreams: ["MDZip.Core (NuGet)"]   # C# PackageReference, not npm — see Review notes
 
   - name: mdzip-core
     path: ../mdzip-core
     type: core
     visibility: public
-    role: Core C# library (.NET) — published as the mdzip-core NuGet package
+    role: Core C# library (.NET) — published as the MDZip.Core NuGet package (renamed from mdzip-core 2026-07-08; repo name unchanged)
     remote: https://github.com/mdzip-project/mdzip-core.git
-    publishes: ["mdzip-core (NuGet)"]
+    publishes: ["MDZip.Core (NuGet)"]
     upstreams: []   # no package.json (version lives in the .csproj <Version>)
 
   - name: mdzip-spec
@@ -191,12 +191,17 @@ during review:
    core library.)
 
 5. **`mdzip-cli` → `mdzip-core` is a NuGet coupling.** `mdzip-cli`
-   consumes `mdzip-core` via a C# `PackageReference` (currently
-   `1.1.0`), not an npm dependency or a project reference. The dashboard
-   can't auto-compute "behind" for it (no `package.json`); the core
-   version lives in `mdzip-core/src/mdzip-core/mdzip-core.csproj`
-   (`<Version>`). This is the kind of non-npm coupling the
-   `DEPENDENCIES.json` enhancement is meant to make machine-readable.
+   consumes the `MDZip.Core` package (currently `1.4.0`; renamed from
+   `mdzip-core` 2026-07-08, see
+   [nuget-mdzip-core-rename.md](nuget-mdzip-core-rename.md)) via a C#
+   `PackageReference`, not an npm dependency or a project reference.
+   The dashboard can't auto-compute "behind" for it (no
+   `package.json`); the version lives in
+   `mdzip-core/src/mdzip-core/mdzip-core.csproj` (`<Version>`) — the
+   repo and file paths keep the old `mdzip-core` name, only the
+   published package ID changed. This is the kind of non-npm coupling
+   the `DEPENDENCIES.json` enhancement is meant to make
+   machine-readable.
 
 6. **.NET 10 upgrade — committed on branches, not merged.** Both repos have
    an `upgrade/net10` branch at **v1.2.0**: `mdzip-core` multi-targets

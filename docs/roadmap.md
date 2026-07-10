@@ -2,11 +2,26 @@
 
 Cross-repository work only — initiatives that span more than one repo.
 Single-repo features live in that repo. See
-[the coordination strategy](../MDZip_GitHub_Organization_Coordination_Strategy.md).
+[the hub architecture](hub-architecture.md).
 
 ## In progress
 
-*(nothing currently — see Planned)*
+### NuGet: `MDZip.Core` rename + "MDZip" org ownership + prefix reservation
+Move the .NET package from `mdzip-core` to the dotted `MDZip.Core` ID
+(the `MDZip` prefix reservation cannot cover a hyphenated ID) and
+publish under a new **`MDZip`** NuGet organization instead of the
+personal account. Full phased plan:
+[nuget-mdzip-core-rename.md](nuget-mdzip-core-rename.md).
+
+- **Done (2026-07-08):** `MDZip` org created; `MDZip.Core` 1.4.0
+  published (license, icon, `MDZip` authorship) via NuGet Trusted
+  Publishing (OIDC, no API key); `mdzip-cli` bumped to consume it and
+  released as `v1.3.2`; docs swept.
+- **Remaining (manual, Kyle only):** deprecate legacy `mdzip-core` on
+  nuget.org pointing at `MDZip.Core`; email account@nuget.org to
+  reserve the `MDZip` prefix.
+- **Repos:** `mdzip-core` (metadata, publish), `mdzip-cli` (package
+  reference), plus manual nuget.org account/email steps.
 
 ## Planned
 
@@ -16,8 +31,21 @@ build importers rather than compatibility hacks, keeping the MDZip
 specification independent.
 
 - **`mdz import`** in `mdzip-cli`, TextBundle/TextPack first (the
-  closest conceptual relative), with pluggable importers later
-  (markdown folders, generic ZIPs of markdown).
+  closest conceptual relative), with pluggable importers later.
+- **Candidate import sources** (running list; pluggable-importer
+  targets, roughly ordered by closeness to the format):
+  - TextBundle / TextPack — closest relative; first implementation.
+  - Rust MDZ archives (`wflixu/mdz` / `mdz-rs`) — same extension,
+    converging layout; an importer doubles as the compatibility
+    evaluation below.
+  - Markdown folders and generic ZIPs of markdown — includes Obsidian
+    vaults and Notion's markdown+assets export.
+  - AI project/chat exports — ChatGPT/OpenAI, Claude, Gemini data
+    exports: hostile JSON zips today; converting one into a browsable
+    archive (chats as markdown, documents alongside, a narrating
+    `index.md`) is the showcase use case for the importer idea.
+  - Google Takeout — per-product payloads, so per-product importers
+    (Keep first if attempted; Docs exports are already zips of HTML/md).
 - **Evaluate mutual compatibility** with the independent Rust MDZ
   project (`wflixu/mdz` / `mdz-rs`), whose layout converges on the
   same design (ZIP, `index.md`, `manifest.json`, same extension).
