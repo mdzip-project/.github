@@ -6,22 +6,7 @@ Single-repo features live in that repo. See
 
 ## In progress
 
-### NuGet: `MDZip.Core` rename + "MDZip" org ownership + prefix reservation
-Move the .NET package from `mdzip-core` to the dotted `MDZip.Core` ID
-(the `MDZip` prefix reservation cannot cover a hyphenated ID) and
-publish under a new **`MDZip`** NuGet organization instead of the
-personal account. Full phased plan:
-[nuget-mdzip-core-rename.md](nuget-mdzip-core-rename.md).
-
-- **Done (2026-07-08):** `MDZip` org created; `MDZip.Core` 1.4.0
-  published (license, icon, `MDZip` authorship) via NuGet Trusted
-  Publishing (OIDC, no API key); `mdzip-cli` bumped to consume it and
-  released as `v1.3.2`; docs swept.
-- **Remaining (manual, Kyle only):** deprecate legacy `mdzip-core` on
-  nuget.org pointing at `MDZip.Core`; email account@nuget.org to
-  reserve the `MDZip` prefix.
-- **Repos:** `mdzip-core` (metadata, publish), `mdzip-cli` (package
-  reference), plus manual nuget.org account/email steps.
+_Nothing in progress right now._
 
 ## Planned
 
@@ -56,6 +41,26 @@ specification independent.
   which points at this entry as the documented plan.
 
 ## Done
+
+### NuGet: `MDZip.Core` rename + "MDZip" org ownership + prefix reservation — 2026-07-09
+Moved the .NET package from `mdzip-core` to the dotted `MDZip.Core` ID
+(the `MDZip` prefix reservation cannot cover a hyphenated ID), published
+under a new **`MDZip`** NuGet organization instead of the personal
+account, deprecated the legacy package, and got the `MDZip` prefix
+reserved. Full phased plan:
+[nuget-mdzip-core-rename.md](nuget-mdzip-core-rename.md).
+
+- **Repos:** `mdzip-core` (metadata, publish), `mdzip-cli` (package
+  reference), plus manual nuget.org account/email steps.
+- **Shipped:** `MDZip.Core` 1.4.0 published (Apache-2.0 license, icon,
+  `MDZip` authorship) via NuGet Trusted Publishing (OIDC, no API key);
+  `mdzip-cli` bumped to consume it, released as `v1.3.2`; legacy
+  `mdzip-core` deprecated on nuget.org pointing at `MDZip.Core`; `MDZip`
+  prefix reservation confirmed live (verified 2026-07-09, see
+  [nuget-id-prefix-reservation.md](nuget-id-prefix-reservation.md)).
+- **Not pursued:** NuGet popularity-transfer (298 lifetime downloads
+  don't justify it); an "MDZip" trademark remains a separate optional
+  follow-on.
 
 ### Parity branch stack merged into `main` — 2026-07-08
 `mdzip-core`'s `main` fast-forwarded from the pre-parity `7dfda11`

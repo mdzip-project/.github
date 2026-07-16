@@ -389,6 +389,28 @@ async function fetchGithubIssueSnippet(owner, repo, useGh) {
     return items.filter(i => !i.pull_request).slice(0, 8).map(i => ({ number: i.number, title: i.title, url: i.html_url }));
   } catch { return []; }
 }
+// Open/closed PRs submitting MDZip packages to the community winget-pkgs repo
+// (not one of our own repos, so it isn't in workspace.md — searched by title
+// instead of tracked in a config file, so it needs nothing kept in sync when
+// a new package or version is submitted).
+async function fetchWingetPrs() {
+  const fields = 'number,title,state,url,createdAt,closedAt,mergedAt';
+  try {
+    const out = await execFileP('gh', ['pr', 'list', '--repo', 'microsoft/winget-pkgs', '--search', 'MDZip in:title',
+      '--state', 'all', '--json', fields, '--limit', '5'], { encoding: 'utf8', maxBuffer: 4 << 20, env: GH_ENV }).then(r => r.stdout);
+    return { ok: true, prs: JSON.parse(out) };
+  } catch (e) {
+    try {
+      const d = await fetchJSON('https://api.github.com/search/issues?q=' + encodeURIComponent('repo:microsoft/winget-pkgs is:pr in:title MDZip'));
+      const prs = (d.items || []).slice(0, 5).map(i => ({
+        number: i.number, title: i.title, url: i.html_url,
+        createdAt: i.created_at, closedAt: i.closed_at, mergedAt: null,
+        state: String(i.state || '').toUpperCase(),
+      }));
+      return { ok: true, prs };
+    } catch (e2) { return { ok: false, error: String(e2.message || e2) }; }
+  }
+}
 async function fetchGithubStats(owner, repo) {
   const issuesUrl = `https://github.com/${owner}/${repo}/issues`;
   try {
@@ -480,11 +502,12 @@ async function refreshAdoption() {
   }));
 
   const searchConsole = await fetchSearchConsole().catch(e => ({ ok: false, error: String(e.message || e) }));
+  const winget = await fetchWingetPrs();
 
-  return { generated: new Date().toISOString(), npm, nuget, marketplace, github, searchConsole };
+  return { generated: new Date().toISOString(), npm, nuget, marketplace, github, searchConsole, winget };
 }
 
-let adoptionCache = readJSON(ADOPTION_CACHE_FILE) || { generated: null, npm: [], nuget: [], marketplace: [], github: [], searchConsole: { ok: false } };
+let adoptionCache = readJSON(ADOPTION_CACHE_FILE) || { generated: null, npm: [], nuget: [], marketplace: [], github: [], searchConsole: { ok: false }, winget: { ok: false, prs: [] } };
 let adoptionRefreshing = false;
 async function refreshAdoptionCache() {
   if (adoptionRefreshing) return;
@@ -588,6 +611,7 @@ const PAGE = `<!doctype html><html><head><meta charset="utf8">
 </section>
 <section id="viewAdoption" hidden>
 <div class="card"><h2><span class="src" id="adoptionMeta">loading…</span><button class="refresh-btn" id="adoptionRefreshBtn" type="button">Refresh now</button></h2></div>
+<div class="card"><h2>WinGet — package submission PRs (microsoft/winget-pkgs)</h2><table class="adopt-table" id="adoptWinget"></table></div>
 <div class="card"><h2>GitHub — stars / forks / open issues</h2><table class="adopt-table" id="adoptGithub"></table></div>
 <div class="card"><h2>npm — weekly downloads</h2><table class="adopt-table" id="adoptNpm"></table></div>
 <div class="card"><h2>NuGet — total downloads</h2><table class="adopt-table" id="adoptNuget"></table></div>
@@ -702,6 +726,27 @@ async function loadAdoption(){
  const r = await fetch('/api/adoption'); const d = await r.json();
  lastAdoptionData = d;
  renderGithubTable(d.github);
+ const winget = d.winget;
+ if(winget && winget.ok){
+   const dayMs = 86400000;
+   document.getElementById('adoptWinget').innerHTML = adoptRows(winget.prs.map(p=>Object.assign({ok:true},p)), [
+     {th:'PR', val:x=>'<a href="'+attrA(x.url)+'" target="_blank" rel="noopener noreferrer">#'+x.number+' '+escA(x.title)+'</a>'},
+     {th:'State', val:x=>{
+       const label = x.mergedAt ? 'merged' : (x.state==='OPEN' ? 'open' : 'closed');
+       const cls = label==='open' ? 'pill-issues-open' : (label==='merged' ? 'pill-issues-zero' : 'pill-stars');
+       return '<span class="pill '+cls+'">'+label+'</span>';
+     }},
+     {th:'Days waiting', stat:true, val:x=>{
+       const start = new Date(x.createdAt);
+       const end = x.state==='OPEN' ? new Date() : new Date(x.closedAt || x.mergedAt || x.createdAt);
+       const days = Math.max(0, Math.floor((end-start)/dayMs));
+       return days + (x.state==='OPEN' ? '' : ' (to close)');
+     }},
+   ]) || '';
+   if(!winget.prs.length) document.getElementById('adoptWinget').innerHTML = '<tbody><tr><td>No matching PRs found.</td></tr></tbody>';
+ } else {
+   document.getElementById('adoptWinget').innerHTML = '<tbody><tr><td class="err">'+escA((winget&&winget.error)||'not available')+'</td></tr></tbody>';
+ }
  document.getElementById('adoptNpm').innerHTML = adoptRows(d.npm, [
    {th:'Package', val:x=>escA(x.pkg)},
    {th:'Weekly downloads', stat:true, val:x=>fmtNum(x.weeklyDownloads)},

@@ -139,6 +139,15 @@ repos:
     remote: https://github.com/mdzip-project/mdzip-win-prev.git
     publishes: []
     upstreams: []   # no package.json
+
+  - name: mdzip-outlook-addin
+    path: ../mdzip-outlook-addin
+    type: apps
+    visibility: private
+    role: Office.js task-pane Add-in — preview .md/.mdz attachments in Outlook (exploratory scaffold, no GitHub remote yet)
+    remote: https://github.com/mdzip-project/mdzip-outlook-addin.git
+    publishes: []
+    upstreams: ["@mdzip/editor"]
 ```
 
 ## Archived
