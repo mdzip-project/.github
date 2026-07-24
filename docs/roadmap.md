@@ -10,6 +10,46 @@ _Nothing in progress right now._
 
 ## Planned
 
+### WinGet distribution: CLI version catch-up, Studio submission — logged 2026-07-24
+Get MDZip properly current on WinGet: bring the already-published
+`MDZip.Cli` package up to date, then get `MDZip.Studio` submitted for
+the first time — gated on finishing outstanding Studio work, which is
+itself gated on the `mdzip-editor` issues Studio embeds via
+`@mdzip/editor`.
+
+Ordered steps:
+
+1. **CLI version bump** — independent of everything below, ready now.
+   `winget-pkgs` has `MDZip.Cli` **1.3.0**
+   ([microsoft/winget-pkgs#396154](https://github.com/microsoft/winget-pkgs/pull/396154),
+   merged 2026-07-15); the current release is **v1.3.2** (2026-07-09).
+2. **`mdzip-editor` open issues** — Studio embeds `@mdzip/editor`, so
+   these should land (and Studio bump its dependency) before Studio
+   work is considered done, to avoid reworking Studio against a moving
+   dependency:
+   [#13](https://github.com/mdzip-project/mdzip-editor/issues/13),
+   [#34](https://github.com/mdzip-project/mdzip-editor/issues/34),
+   [#35](https://github.com/mdzip-project/mdzip-editor/issues/35),
+   [#36](https://github.com/mdzip-project/mdzip-editor/issues/36),
+   [#37](https://github.com/mdzip-project/mdzip-editor/issues/37).
+3. **`mdzip-studio` open issues** — addressed after step 2:
+   [#1](https://github.com/mdzip-project/mdzip-studio/issues/1),
+   [#2](https://github.com/mdzip-project/mdzip-studio/issues/2),
+   [#4](https://github.com/mdzip-project/mdzip-studio/issues/4),
+   [#5](https://github.com/mdzip-project/mdzip-studio/issues/5),
+   [#8](https://github.com/mdzip-project/mdzip-studio/issues/8),
+   [#9](https://github.com/mdzip-project/mdzip-studio/issues/9),
+   [#10](https://github.com/mdzip-project/mdzip-studio/issues/10),
+   [#11](https://github.com/mdzip-project/mdzip-studio/issues/11),
+   [#12](https://github.com/mdzip-project/mdzip-studio/issues/12),
+   [#13](https://github.com/mdzip-project/mdzip-studio/issues/13).
+4. **Studio WinGet submission** — first-time `MDZip.Studio` package to
+   `winget-pkgs`, once steps 2–3 are in an acceptable state (not
+   necessarily every issue closed — revisit scope when step 2 is done).
+
+- **Repos:** `mdzip-cli`, `mdzip-editor`, `mdzip-studio`; external
+  `microsoft/winget-pkgs`.
+
 ### Related-format interoperability (importers)
 Acknowledge prior art, compete on ecosystem, cooperate on interop —
 build importers rather than compatibility hacks, keeping the MDZip
