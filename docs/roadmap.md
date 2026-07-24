@@ -20,17 +20,20 @@ specification independent.
 - **Candidate import sources** (running list; pluggable-importer
   targets, roughly ordered by closeness to the format):
   - TextBundle / TextPack — closest relative; first implementation.
+    Tracked: [mdzip-cli#4](https://github.com/mdzip-project/mdzip-cli/issues/4).
   - Rust MDZ archives (`wflixu/mdz` / `mdz-rs`) — same extension,
     converging layout; an importer doubles as the compatibility
-    evaluation below.
+    evaluation below. No issue yet.
   - Markdown folders and generic ZIPs of markdown — includes Obsidian
-    vaults and Notion's markdown+assets export.
+    vaults and Notion's markdown+assets export. No issue yet.
   - AI project/chat exports — ChatGPT/OpenAI, Claude, Gemini data
     exports: hostile JSON zips today; converting one into a browsable
     archive (chats as markdown, documents alongside, a narrating
     `index.md`) is the showcase use case for the importer idea.
+    Tracked: [mdzip-cli#5](https://github.com/mdzip-project/mdzip-cli/issues/5).
   - Google Takeout — per-product payloads, so per-product importers
     (Keep first if attempted; Docs exports are already zips of HTML/md).
+    No issue yet.
 - **Evaluate mutual compatibility** with the independent Rust MDZ
   project (`wflixu/mdz` / `mdz-rs`), whose layout converges on the
   same design (ZIP, `index.md`, `manifest.json`, same extension).
