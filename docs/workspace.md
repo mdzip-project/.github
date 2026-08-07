@@ -148,6 +148,15 @@ repos:
     remote: https://github.com/mdzip-project/mdzip-outlook-addin.git
     publishes: []
     upstreams: ["@mdzip/editor"]
+
+  - name: mdzip-tm-export-gv-chat
+    path: ../mdzip-tm-export-gv-chat
+    type: apps
+    visibility: public
+    role: Tampermonkey userscript — exports a Google Voice conversation to .mdz
+    remote: https://github.com/mdzip-project/mdzip-tm-export-gv-chat.git
+    publishes: []
+    upstreams: ["@mdzip/core-js"]
 ```
 
 ## Archived

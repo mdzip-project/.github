@@ -19,19 +19,24 @@ itself gated on the `mdzip-editor` issues Studio embeds via
 
 Ordered steps:
 
-1. **CLI version bump** — independent of everything below, ready now.
-   `winget-pkgs` has `MDZip.Cli` **1.3.0**
+1. **CLI version bump** — independent of everything below. Manifest
+   authored ([mdzip-cli@af40194](https://github.com/mdzip-project/mdzip-cli/commit/af40194));
+   PR open at
+   [microsoft/winget-pkgs#407510](https://github.com/microsoft/winget-pkgs/pull/407510)
+   (opened 2026-07-24), awaiting CI + maintainer merge. Prior version:
+   `MDZip.Cli` **1.3.0**
    ([microsoft/winget-pkgs#396154](https://github.com/microsoft/winget-pkgs/pull/396154),
-   merged 2026-07-15); the current release is **v1.3.2** (2026-07-09).
+   merged 2026-07-15).
 2. **`mdzip-editor` open issues** — Studio embeds `@mdzip/editor`, so
    these should land (and Studio bump its dependency) before Studio
    work is considered done, to avoid reworking Studio against a moving
    dependency:
    [#13](https://github.com/mdzip-project/mdzip-editor/issues/13),
-   [#34](https://github.com/mdzip-project/mdzip-editor/issues/34),
    [#35](https://github.com/mdzip-project/mdzip-editor/issues/35),
    [#36](https://github.com/mdzip-project/mdzip-editor/issues/36),
    [#37](https://github.com/mdzip-project/mdzip-editor/issues/37).
+   (#34 shipped 2026-07-22 in `@mdzip/editor` 1.3.20, closed 2026-07-24 —
+   already done before this initiative was logged.)
 3. **`mdzip-studio` open issues** — addressed after step 2:
    [#1](https://github.com/mdzip-project/mdzip-studio/issues/1),
    [#2](https://github.com/mdzip-project/mdzip-studio/issues/2),
