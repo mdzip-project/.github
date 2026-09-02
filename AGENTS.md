@@ -5,11 +5,11 @@ Instructions for AI agents working across the MDZip workspace. This repo
 from here, reaching into the product repositories listed in
 [docs/workspace.md](docs/workspace.md).
 
-**Start here:** current cross-repo initiatives and their state live in
-[docs/roadmap.md](docs/roadmap.md). For building/testing/releasing the .NET
-repos (`mdzip-core`, `mdzip-cli`), see
-[docs/dotnet-workflow.md](docs/dotnet-workflow.md). The active initiative is
-**core parity** — the detailed gap + phased plan is in
+**Start here:** cross-repo work is tracked as issues in the repositories
+that own the code, cross-linked to their counterparts — there is no central
+tracker. For building/testing/releasing the .NET repos (`mdzip-core`,
+`mdzip-cli`), see [docs/dotnet-workflow.md](docs/dotnet-workflow.md). For
+core parity, the detailed gap + phased plan is in
 [docs/core-parity.md](docs/core-parity.md).
 
 ## Orchestration model
@@ -19,6 +19,10 @@ repos (`mdzip-core`, `mdzip-cli`), see
 - Each repository keeps its own CI, branch protection, and `CODEOWNERS`
   as the gate that approves its own merge. The hub never bypasses them.
 - Work confined to a single repository belongs in that repository.
+- An initiative that spans repos is a set of per-repo issues that link to
+  each other (e.g. a Studio issue and its VS Code counterpart), plus each
+  repo's `UPSTREAM_REQUESTS.md` for blocking dependencies — not a single
+  tracking doc in the hub.
 
 ## STATUS.md protocol (drives the dashboard)
 

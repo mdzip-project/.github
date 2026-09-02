@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "MDZip": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "c:\\Users\\KMW\\AppData\\Roaming\\Code\\User\\globalStorage\\mdzip-project.mdzip-vscode\\mdzip-mcp-launcher.cjs"
+      ]
+    }
+  }
+}

@@ -1,8 +1,7 @@
 # .NET repo workflow (`mdzip-core`, `mdzip-cli`)
 
 How to build, test, pack, and integration-test the C# repos. Used by the
-core-parity work ([roadmap.md](roadmap.md) → [core-parity.md](core-parity.md))
-and any .NET change.
+core-parity work ([core-parity.md](core-parity.md)) and any .NET change.
 
 ## Prerequisites
 - **.NET SDK 10** (`dotnet --version` ≥ 10.0).

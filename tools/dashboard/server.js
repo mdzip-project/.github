@@ -16,7 +16,6 @@ const PORT = process.env.PORT || 7777;
 const GITHUB_ROOT = path.resolve(__dirname, '..', '..');         // the .github repo root
 const MANIFEST = path.join(GITHUB_ROOT, 'docs', 'workspace.md');
 const LINKS_FILE = path.join(__dirname, 'links.json');
-const ROADMAP_FILE = path.join(GITHUB_ROOT, 'docs', 'roadmap.md');
 const PLANNING_NOTES_FILE = path.resolve(GITHUB_ROOT, '..', 'planning', 'notes.md');
 const ADOPTION_CACHE_FILE = path.join(__dirname, 'adoption-cache.json');
 const ADOPTION_REFRESH_MS = 60 * 60 * 1000; // hourly — these numbers don't move fast
@@ -71,8 +70,8 @@ function parseManifest(md) {
   return { packages, repos };
 }
 
-// ---------- tiny markdown renderer (Next tab — roadmap.md + planning/notes.md) ----------
-// Not a general CommonMark implementation: just enough for these two files'
+// ---------- tiny markdown renderer (Next tab — planning/notes.md) ----------
+// Not a general CommonMark implementation: just enough for that file's
 // actual shape (##/### headings, bullet/numbered lists incl. one level of
 // nesting, bold, inline code, links, wrapped paragraph lines).
 function mdEscape(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
@@ -129,10 +128,6 @@ function extractSections(md, prefixes) {
 }
 function readNext() {
   const out = {};
-  try {
-    const md = fs.readFileSync(ROADMAP_FILE, 'utf8');
-    out.roadmapHtml = mdToHtml(extractSections(md, ['in progress', 'planned']));
-  } catch (e) { out.roadmapError = 'docs/roadmap.md: ' + String(e.message || e).split('\n')[0]; }
   try {
     const md = fs.readFileSync(PLANNING_NOTES_FILE, 'utf8');
     out.movesHtml = mdToHtml(extractSections(md, ['next big moves']));
@@ -606,7 +601,6 @@ const PAGE = `<!doctype html><html><head><meta charset="utf8">
 <table><thead><tr><th>Project</th><th>Version</th><th>Git</th><th>Deps</th><th>Status</th></tr></thead><tbody id="rows"></tbody></table>
 </section>
 <section id="viewNext" hidden>
-<div class="card"><h2>Roadmap — in progress / planned</h2><div class="src">docs/roadmap.md</div><div class="next-content" id="roadmapContent"></div></div>
 <div class="card"><h2>Next big moves</h2><div class="src">planning/notes.md (private repo)</div><div class="next-content" id="movesContent"></div></div>
 </section>
 <section id="viewAdoption" hidden>
@@ -668,7 +662,6 @@ async function load(){
  const linkCatHtml = c => '<h4>'+esc(c.cat)+'</h4>'+(c.items||[]).map(i=>'<a href="'+attr(i.href)+'" target="_blank" rel="noopener noreferrer" role="menuitem">'+esc(i.label)+'</a>').join('');
  document.getElementById('linksMenu').innerHTML = (d.links||[]).map(linkCatHtml).join('');
  const next = d.next || {};
- document.getElementById('roadmapContent').innerHTML = next.roadmapHtml || '<p class="detail">'+esc(next.roadmapError||'No content.')+'</p>';
  document.getElementById('movesContent').innerHTML = next.movesHtml || '<p class="detail">'+esc(next.movesError||'No content.')+'</p>';
  renderMeta();
 }

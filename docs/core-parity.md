@@ -1,8 +1,7 @@
 # Core Parity: `mdzip-core` (C#) → `mdzip-core-js` (TS)
 
 Method-level map of the gap between the C# core and the TypeScript core,
-and the phased plan to close it. This is the detail behind the parity entry
-in [roadmap.md](roadmap.md).
+and the phased plan to close it.
 
 - **Status: parity shipped and exposed in the CLI.** `mdzip-core` **1.3.3**
   (parity landed at `v1.3.0`, plus the 1.3.3 raw-`<img>` orphan-detection fix)

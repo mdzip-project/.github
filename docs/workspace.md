@@ -225,5 +225,6 @@ during review:
    an `upgrade/net10` branch at **v1.2.0**: `mdzip-core` multi-targets
    `net8.0;net10.0` (`b4b392b`), `mdzip-cli` targets `net10.0` (`4dac987`).
    Release ordering and the next step (publish core 1.2.0, then bump cli's
-   `mdzip-core` reference) are tracked in [roadmap.md](roadmap.md); the
-   integration-test recipe is in [dotnet-workflow.md](dotnet-workflow.md).
+   `mdzip-core` reference) are tracked as issues in the owning repos
+   (`mdzip-core`, `mdzip-cli`); the integration-test recipe is in
+   [dotnet-workflow.md](dotnet-workflow.md).

@@ -33,7 +33,6 @@ Current layout (grows as needed — this isn't a prescribed target):
 ├── profile/
 │   └── README.md                 # Organization landing page
 ├── docs/
-│   ├── roadmap.md                # Cross-repo initiatives and their state
 │   ├── workspace.md              # Repo manifest: paths + roles (hub reads this)
 │   ├── hub-architecture.md       # This file
 │   ├── dotnet-workflow.md        # Build/test/release for the .NET repos
@@ -76,14 +75,19 @@ This model suits a single maintainer or small team. If repository
 ownership later splits across teams, revisit the decentralized
 "open an upstream issue" flow as the default instead (see AGENTS.md).
 
-## Roadmap Scope
+## Cross-Repo Initiatives
 
-[`docs/roadmap.md`](roadmap.md) should contain only work that spans
-multiple repositories, e.g.:
+Work that spans multiple repositories — e.g.:
 
 -   MDZip Studio depends on a new `mdzip-core-js` API.
 -   Viewer requires Manifest v1.1 support.
 -   Obsidian plugin migration depends on editor API changes.
+
+is tracked as an issue **in each repository it touches**, with the issues
+cross-linking each other (e.g. a Studio issue and its VS Code counterpart).
+There is no central roadmap or tracking document in the hub — the durable
+record lives with the code, alongside each repo's `UPSTREAM_REQUESTS.md`
+for blocking dependencies (see [Cross-Repository Workflow](#cross-repository-workflow)).
 
 Individual feature plans belong in the repository that owns the code.
 
@@ -176,11 +180,11 @@ recording *why* a downstream change exists:
     an `upstream-change` issue in the target repository and link it
     from `UPSTREAM_REQUESTS.md`. This is the durable record, even when
     the same maintainer makes both changes.
--   For purely internal coordination, a `docs/roadmap.md` entry is
-    enough.
+-   For a multi-repo initiative, open an issue in each repository it
+    touches and cross-link them; each side's progress lives on its own issue.
 -   After an upstream change is merged and released, update dependent
-    repositories and close the dependency in both `docs/roadmap.md`
-    and `UPSTREAM_REQUESTS.md`.
+    repositories and close the dependency issue and its
+    `UPSTREAM_REQUESTS.md` entry.
 
 ### Upstream Change Template
 

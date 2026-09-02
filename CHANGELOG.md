@@ -9,8 +9,8 @@ Notable changes to the MDZip `.github` coordination hub. Format based on
 
 - **Coordination & governance strategy**
   (`MDZip_GitHub_Organization_Coordination_Strategy.md`): hub-and-spoke
-  orchestration model, workspace model, cross-repository workflow, roadmap
-  scope, and the project dashboard design.
+  orchestration model, workspace model, cross-repository workflow, and the
+  project dashboard design.
 - **Workspace manifest** (`docs/workspace.md`): the 11 active repos (the
   `.github` hub + 10 product repos) with type, visibility, roles, remotes,
   and first-party package mapping; plus archived repos and review notes.
