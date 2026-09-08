@@ -18,7 +18,9 @@ const MANIFEST = path.join(GITHUB_ROOT, 'docs', 'workspace.md');
 const LINKS_FILE = path.join(__dirname, 'links.json');
 const PLANNING_NOTES_FILE = path.resolve(GITHUB_ROOT, '..', 'planning', 'notes.md');
 const ADOPTION_CACHE_FILE = path.join(__dirname, 'adoption-cache.json');
+const MAC_DEALS_CACHE_FILE = path.join(__dirname, 'mac-deals-cache.json');
 const ADOPTION_REFRESH_MS = 60 * 60 * 1000; // hourly — these numbers don't move fast
+const MAC_DEALS_REFRESH_MS = 30 * 60 * 1000; // 30 mins
 // Deliberately outside every repo (this one's public): a leaked service-account
 // key here would be a leaked key, gitignore or not. See planning/agent-notes.md.
 const GSC_KEY_FILE = path.join(process.env.APPDATA || '', 'mdzip-dashboard', 'gsc-service-account.json');
@@ -519,6 +521,295 @@ async function refreshAdoptionCache() {
 refreshAdoptionCache();
 setInterval(refreshAdoptionCache, ADOPTION_REFRESH_MS);
 
+// ---------- Mac deals (Sacramento Craigslist) ----------
+const MAC_DEAL_SEARCH_TERMS = [
+  'M1 Mac mini',
+  'Mac mini M1',
+  'Apple Silicon Mac mini',
+  'M1 MacBook Air',
+  'MacBook Air M1',
+  'M1 MacBook Pro',
+  'MacBook Pro M1',
+  'M2 Mac mini',
+  'M2 MacBook Air',
+  'M2 MacBook Pro',
+  'M3 MacBook Air',
+  'M3 MacBook Pro',
+  'Mac mini',
+  'MacBook Air',
+  'MacBook Pro',
+];
+function clampPrice(value) {
+  if (value === null || value === undefined || Number.isNaN(Number(value))) return null;
+  return Number(value);
+}
+function parsePrice(text) {
+  const m = String(text || '').match(/\$\s*([0-9][0-9,]*(?:\.\d{2})?)/);
+  if (!m) return null;
+  return clampPrice(m[1].replace(/,/g, ''));
+}
+function parseStorageGb(value) {
+  if (!value) return null;
+  const text = String(value).toUpperCase();
+  const tb = text.match(/(\d+)\s*TB/i); if (tb) return Number(tb[1]) * 1024;
+  const gb = text.match(/(\d+)\s*GB/i); if (gb) return Number(gb[1]);
+  return null;
+}
+function parseRamGb(value) {
+  if (!value) return null;
+  const m = String(value).match(/(\d+)\s*(?:GB|G)/i);
+  return m ? Number(m[1]) : null;
+}
+function normalizeModel(text) {
+  const t = String(text || '').toLowerCase();
+  if (t.includes('macbook pro')) return 'MacBook Pro';
+  if (t.includes('macbook air')) return 'MacBook Air';
+  if (t.includes('mac mini')) return 'Mac mini';
+  if (t.includes('mac mini')) return 'Mac mini';
+  return null;
+}
+function normalizeChip(text) {
+  const t = String(text || '');
+  if (/M4\s+Pro/i.test(t)) return 'M4 Pro';
+  if (/M3\s+Pro/i.test(t)) return 'M3 Pro';
+  if (/M2\s+Pro/i.test(t)) return 'M2 Pro';
+  if (/M1\s+Pro/i.test(t)) return 'M1 Pro';
+  if (/\bM4\b/i.test(t)) return 'M4';
+  if (/\bM3\b/i.test(t)) return 'M3';
+  if (/\bM2\b/i.test(t)) return 'M2';
+  if (/\bM1\b/i.test(t)) return 'M1';
+  if (/Apple\s+Silicon/i.test(t)) return 'Apple Silicon';
+  return null;
+}
+function parseDetailsFromHtml(html) {
+  const text = String(html || '').replace(/<script[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  return text;
+}
+function rateMacDeal(item) {
+  let score = 0;
+  const chip = item.chip || '';
+  const hasConfirmed = item.verification === 'confirmed';
+  const hasInferred = item.verification === 'inferred';
+  const hasNeedsVerification = item.verification === 'needs-verification';
+  if (hasConfirmed) score += 40;
+  else if (hasInferred) score += 20;
+  else if (hasNeedsVerification) score += 0;
+  if (item.ramGb >= 16) score += 20;
+  else if (item.ramGb === 8) score += 8;
+  else if (item.ramGb == null) score += 0;
+  if (item.price != null) {
+    const p = item.price;
+    if (chip === 'M1' || chip === 'M1 Pro' || chip === 'Apple Silicon') {
+      if (p <= 250) score += 25;
+      else if (p <= 325) score += 18;
+      else if (p <= 425) score += 8;
+      else score -= 10;
+    } else if (chip === 'M2' || chip === 'M2 Pro') {
+      if (p <= 450) score += 15;
+      else if (p <= 650) score += 8;
+      else score -= 10;
+    } else if (chip === 'M3' || chip === 'M3 Pro') {
+      if (p <= 700) score += 12;
+      else if (p <= 950) score += 5;
+      else score -= 10;
+    } else if (chip === 'M4' || chip === 'M4 Pro') {
+      if (p <= 900) score += 10;
+      else if (p <= 1150) score += 3;
+      else score -= 10;
+    } else {
+      score += 5;
+    }
+  }
+  if (item.condition === 'good' || item.condition === 'clean') score += 5;
+  if (item.notes && item.notes.length) score += Math.min(item.notes.length, 5);
+  if (chip === 'M1') score += 0;
+  else if (chip === 'M2') score += 2;
+  else if (chip === 'M3') score += 4;
+  else if (chip === 'M4') score += 6;
+  if (item.verification === 'needs-verification') score -= 10;
+  if ([ 'broken', 'parts', 'trade', 'wanted' ].some(v => String(item.notes || '').toLowerCase().includes(v))) score -= 30;
+  return Math.max(0, score);
+}
+function ratingLabel(score) {
+  if (score >= 80) return 'BUY';
+  if (score >= 65) return 'GOOD';
+  if (score >= 50) return 'FAIR';
+  return 'PASS';
+}
+function dedupeMacDeals(listings) {
+  const seen = new Set();
+  const out = [];
+  for (const listing of listings) {
+    const id = listing.id || listing.url || listing.title;
+    if (seen.has(id)) continue;
+    seen.add(id);
+    out.push(listing);
+  }
+  return out;
+}
+function isExcludedListing(text) {
+  const lower = String(text || '').toLowerCase();
+  if (/(iMac|mac pro|mac studio|intel|parts|broken|wanted|trade only|empty box|accessory|keyboard|mouse|monitor)/i.test(lower)) return true;
+  if (/\bipad\b|\biphone\b|\bwatch\b|airpods/i.test(lower)) return true;
+  return false;
+}
+function isLikelyMacListing(text) {
+  const lower = String(text || '').toLowerCase();
+  return /macbook\s*(air|pro)|mac\s*mini|apple\s*silicon/i.test(lower);
+}
+function buildMacListing(item) {
+  const title = item.title || 'Unknown listing';
+  const text = `${title} ${item.description || ''}`.toLowerCase();
+  const model = normalizeModel(title) || normalizeModel(text) || 'Unknown';
+  const chipText = `${title} ${item.description || ''}`;
+  let chip = normalizeChip(chipText);
+  let verification = 'confirmed';
+  if (!chip) {
+    const hasLikelyGeneric = /\b(macbook\s*(air|pro)|mac\s*mini)\b/i.test(chipText) && !/intel/i.test(chipText);
+    if (hasLikelyGeneric) {
+      chip = 'Apple Silicon';
+      verification = 'needs-verification';
+    }
+  }
+  if (/intel/i.test(chipText)) {
+    return null;
+  }
+  if (!chip && !isLikelyMacListing(chipText)) return null;
+  if (isExcludedListing(chipText)) return null;
+  const storageText = String(`${title} ${item.description || ''}`);
+  const ramMatch = /(?:ram|memory)\s*[:=]?\s*(\d+)\s*GB|\b(\d+)\s*GB\s*(?:ram|memory)\b|\b(\d+)GB\b/i.exec(storageText);
+  const ramGb = ramMatch ? Number(ramMatch[1] || ramMatch[2] || ramMatch[3]) : null;
+  const storageGb = parseStorageGb(storageText) || null;
+  const price = item.price || parsePrice(title) || parsePrice(item.description || '');
+  const notes = [];
+  if (ramGb) notes.push(`${ramGb} GB RAM`);
+  if (storageGb) notes.push(`${storageGb} GB storage`);
+  if (!ramGb) notes.push('RAM unknown');
+  if (chip === 'Apple Silicon') notes.push('Needs Verification');
+  const listing = {
+    id: item.id || item.url,
+    source: 'Craigslist',
+    title,
+    url: item.url,
+    price,
+    location: item.location || 'Sacramento',
+    postedAt: item.postedAt || new Date().toISOString(),
+    formFactor: model,
+    chip,
+    ramGb,
+    storageGb,
+    condition: item.condition || 'good',
+    verification,
+    valueRating: 'PASS',
+    score: 0,
+    notes,
+  };
+  listing.score = rateMacDeal(listing);
+  listing.valueRating = ratingLabel(listing.score);
+  return listing;
+}
+async function fetchText(url, timeoutMs = 10000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetch(url, { signal: controller.signal, headers: { 'User-Agent': 'Mozilla/5.0', Accept: 'text/html,application/xhtml+xml' } });
+    if (!response.ok) throw new Error('HTTP ' + response.status);
+    return await response.text();
+  } finally {
+    clearTimeout(timer);
+  }
+}
+async function fetchCraigslistSearchResults() {
+  const results = [];
+  const seen = new Set();
+  for (const term of MAC_DEAL_SEARCH_TERMS) {
+    const url = `https://sacramento.craigslist.org/search/sss?query=${encodeURIComponent(term)}&sort=rel&srchType=A`;
+    try {
+      const html = await fetchText(url, 12000);
+      const matches = [...html.matchAll(/href=["']([^"']*sacramento\.craigslist\.org[^"']+)["'][^>]*>(?:<span[^>]*>)?([^<]+)?/gi)];
+      for (const match of matches) {
+        const href = match[1];
+        const label = (match[2] || '').trim();
+        if (!href || !/\/\w+\//.test(href)) continue;
+        if (href.includes('/search/')) continue;
+        if (!href.startsWith('http')) continue;
+        const canonical = href.split('#')[0];
+        if (seen.has(canonical)) continue;
+        seen.add(canonical);
+        results.push({ title: label || 'Craigslist listing', url: canonical, source: 'Craigslist' });
+      }
+    } catch (_) {
+      // Quietly ignore individual search failures; the dashboard continues with cached data.
+    }
+  }
+  return results;
+}
+async function enrichMacListing(result) {
+  try {
+    const html = await fetchText(result.url, 12000);
+    const titleMatch = html.match(/<title>([^<]+)<\/title>/i) || html.match(/"og:title"\s+content="([^"]+)"/i);
+    const priceMatch = html.match(/<span[^>]*class=["'][^"']*price[^"']*["'][^>]*>([^<]+)<\/span>/i) || html.match(/\$\s*([0-9][0-9,]*(?:\.\d{2})?)/);
+    const description = parseDetailsFromHtml(html);
+    const title = titleMatch ? titleMatch[1].replace(/\s+\|\s+Craigslist/i, '').trim() : (result.title || 'Craigslist listing');
+    return buildMacListing({
+      id: String(result.url).split('/').pop() || result.url,
+      title,
+      description,
+      location: result.location || 'Sacramento',
+      url: result.url,
+      price: parsePrice(priceMatch ? priceMatch[1] || priceMatch[0] : ''),
+      postedAt: new Date().toISOString(),
+      condition: 'good',
+    });
+  } catch {
+    return null;
+  }
+}
+async function refreshMacDeals() {
+  const results = await fetchCraigslistSearchResults();
+  const normalized = [];
+  for (const result of results) {
+    try {
+      const spec = await enrichMacListing(result);
+      if (spec) normalized.push(spec);
+    } catch (_) {
+      // skip failed listing detail lookups
+    }
+  }
+  const deduped = dedupeMacDeals(normalized).sort((a, b) => {
+    const rank = { BUY: 4, GOOD: 3, FAIR: 2, PASS: 1 };
+    const scoreDiff = Number(b.score || 0) - Number(a.score || 0);
+    if (scoreDiff !== 0) return scoreDiff;
+    return (a.price || Number.MAX_SAFE_INTEGER) - (b.price || Number.MAX_SAFE_INTEGER);
+  });
+  const filtered = deduped.filter(item => item && item.formFactor && item.formFactor !== 'Unknown');
+  return {
+    generated: new Date().toISOString(),
+    listings: filtered,
+    refreshError: null,
+  };
+}
+let macDealsCache = readJSON(MAC_DEALS_CACHE_FILE) || { generated: null, listings: [], refreshError: null };
+let macDealsRefreshing = false;
+async function refreshMacDealsCache() {
+  if (macDealsRefreshing) return;
+  macDealsRefreshing = true;
+  try {
+    macDealsCache = await refreshMacDeals();
+    fs.writeFileSync(MAC_DEALS_CACHE_FILE, JSON.stringify(macDealsCache, null, 2));
+  } catch (e) {
+    macDealsCache = Object.assign({}, macDealsCache, { refreshError: String(e.message || e) });
+  } finally {
+    macDealsRefreshing = false;
+  }
+}
+refreshMacDealsCache();
+setInterval(refreshMacDealsCache, MAC_DEALS_REFRESH_MS);
+
 // ---------- HTML ----------
 const PAGE = `<!doctype html><html><head><meta charset="utf8">
 <title>MDZip Workspace</title>
@@ -550,6 +841,16 @@ const PAGE = `<!doctype html><html><head><meta charset="utf8">
  .tab-btn:hover{color:#e6edf3}
  .tab-btn.active{color:#e6edf3;background:#161b22;border-color:#30363d}
  .card{background:#161b22;border:1px solid #30363d;border-radius:6px;margin:16px 20px;padding:4px 18px 14px}
+ .mac-deals-table{margin-top:8px;width:100%;border-collapse:collapse;font-size:12px}
+ .mac-deals-table th,.mac-deals-table td{padding:6px 8px;border-bottom:1px solid #21262d;vertical-align:top;text-align:left}
+ .mac-deals-table th{color:#8b949e;text-transform:uppercase;letter-spacing:.03em;font-size:11px}
+ .mac-deals-table tbody tr:hover{background:#0d1117}
+ .mac-deal-buy{color:#3fb950;font-weight:700}
+ .mac-deal-good{color:#58a6ff;font-weight:700}
+ .mac-deal-fair{color:#e3b341;font-weight:700}
+ .mac-deal-pass{color:#8b949e;font-weight:700}
+ .mac-deal-link{color:#79c0ff;text-decoration:none}
+ .mac-deal-link:hover{text-decoration:underline}
  .card h2{font-size:14px;margin:14px 0 2px}
  .card .src{color:#8b949e;font-size:11px}
  .next-content{font-size:13px}
@@ -596,12 +897,16 @@ const PAGE = `<!doctype html><html><head><meta charset="utf8">
  #adoptExtSites td{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 </style></head><body>
 <header><h1>MDZip Workspace</h1><div class="head-actions"><span class="meta" id="meta">loading…</span><div class="links-menu-wrap"><button class="pause-btn" id="linksBtn" type="button" aria-haspopup="true" aria-expanded="false">Links ▾</button><div class="links-menu" id="linksMenu" role="menu" hidden></div></div><button class="pause-btn" id="pauseBtn" type="button" title="Pause auto-refresh">Pause</button></div></header>
-<nav class="tabs"><button class="tab-btn active" id="tabRepos" type="button">Repos</button><button class="tab-btn" id="tabNext" type="button">Next</button><button class="tab-btn" id="tabAdoption" type="button">Adoption</button></nav>
+<nav class="tabs"><button class="tab-btn active" id="tabRepos" type="button">Repos</button><button class="tab-btn" id="tabNext" type="button">Next</button><button class="tab-btn" id="tabAdoption" type="button">Adoption</button><button class="tab-btn" id="tabMacDeals" type="button">Mac Deals</button></nav>
 <section id="viewRepos">
 <table><thead><tr><th>Project</th><th>Version</th><th>Git</th><th>Deps</th><th>Status</th></tr></thead><tbody id="rows"></tbody></table>
 </section>
 <section id="viewNext" hidden>
 <div class="card"><h2>Next big moves</h2><div class="src">planning/notes.md (private repo)</div><div class="next-content" id="movesContent"></div></div>
+</section>
+<section id="viewMacDeals" hidden>
+<div class="card"><h2><span class="src" id="macDealsMeta">loading…</span><button class="refresh-btn" id="macDealsRefreshBtn" type="button">Refresh deals</button></h2></div>
+<div class="card"><h2>Craigslist Sacramento Apple Silicon Macs</h2><table class="mac-deals-table" id="macDealsTable"></table></div>
 </section>
 <section id="viewAdoption" hidden>
 <div class="card"><h2><span class="src" id="adoptionMeta">loading…</span><button class="refresh-btn" id="adoptionRefreshBtn" type="button">Refresh now</button></h2></div>
@@ -801,6 +1106,46 @@ document.getElementById('adoptionRefreshBtn').addEventListener('click', async ()
    if(!stillRefreshing){ clearInterval(adoptionPollTimer); adoptionPollTimer=null; }
  }, 2000);
 });
+async function loadMacDeals(){
+ const r = await fetch('/api/mac-deals');
+ const d = await r.json();
+ const rows = (d.listings || []).map(x => {
+   const ratingClass = x.valueRating === 'BUY' ? 'mac-deal-buy' : x.valueRating === 'GOOD' ? 'mac-deal-good' : x.valueRating === 'FAIR' ? 'mac-deal-fair' : 'mac-deal-pass';
+   const notes = (x.notes || []).join(' · ');
+   const price = x.price == null ? '—' : '$' + x.price.toLocaleString();
+   const chip = x.chip || 'unknown';
+   const ram = x.ramGb == null ? 'unknown' : x.ramGb + ' GB';
+   const storage = x.storageGb == null ? 'unknown' : x.storageGb + ' GB';
+   const age = x.postedAt ? new Date(x.postedAt).toLocaleDateString(undefined,{month:'short',day:'numeric'}) : '—';
+   return '<tr>' +
+     '<td><span class="'+ratingClass+'">'+escA(x.valueRating || 'PASS')+'</span></td>' +
+     '<td class="stat">'+escA(price)+'</td>' +
+     '<td>'+escA(x.formFactor || 'Unknown')+'</td>' +
+     '<td>'+escA(chip)+'</td>' +
+     '<td>'+escA(ram)+'</td>' +
+     '<td>'+escA(storage)+'</td>' +
+     '<td>'+escA(x.location || 'Sacramento')+'</td>' +
+     '<td>'+escA(age)+'</td>' +
+     '<td><div title="'+attrA(x.title || 'Unknown listing')+'">'+escA((x.title || 'Unknown listing').slice(0, 80))+'</div></td>' +
+     '<td>'+escA(notes.slice(0, 160))+'</td>' +
+     '<td><a class="mac-deal-link" href="'+attrA(x.url || '#')+'" target="_blank" rel="noopener noreferrer">Open</a></td>' +
+     '</tr>';
+ });
+ document.getElementById('macDealsTable').innerHTML = '<thead><tr><th>Rating</th><th>Price</th><th>Model</th><th>Chip</th><th>RAM</th><th>Storage</th><th>Location</th><th>Age</th><th>Title</th><th>Notes</th><th>Link</th></tr></thead><tbody>' + (rows.join('') || '<tr><td colspan="11">No matching Mac deals found.</td></tr>') + '</tbody>';
+ const updated = d.generated ? new Date(d.generated).toLocaleString() : 'not yet refreshed';
+ const refreshError = d.refreshError ? '  ·  last refresh failed: ' + escA(d.refreshError) : '';
+ document.getElementById('macDealsMeta').textContent = 'Last refreshed: ' + updated + refreshError + '  ·  ' + (d.listings || []).length + ' matches';
+}
+let macDealsRefreshTimer = null;
+document.getElementById('macDealsRefreshBtn').addEventListener('click', async ()=>{
+ await fetch('/api/mac-deals/refresh', { method:'POST' });
+ if(macDealsRefreshTimer) clearInterval(macDealsRefreshTimer);
+ macDealsRefreshTimer = setInterval(async ()=>{
+   const d = await fetch('/api/mac-deals').then(r=>r.json());
+   if(!d.refreshing){ clearInterval(macDealsRefreshTimer); macDealsRefreshTimer=null; }
+   await loadMacDeals();
+ }, 2000);
+});
 function stampAt(at){ meta.updated=new Date(at).toLocaleTimeString(); }
 function tick(){
  if(paused){ renderMeta(); return; }
@@ -835,21 +1180,24 @@ const TAB_KEY = 'mdzipDashboardTab';
 function showTab(tab, persist){
  document.getElementById('viewRepos').hidden = tab!=='repos';
  document.getElementById('viewNext').hidden = tab!=='next';
+ document.getElementById('viewMacDeals').hidden = tab!=='macdeals';
  document.getElementById('viewAdoption').hidden = tab!=='adoption';
  document.getElementById('legend').hidden = tab!=='repos';
  document.getElementById('tabRepos').classList.toggle('active', tab==='repos');
  document.getElementById('tabNext').classList.toggle('active', tab==='next');
+ document.getElementById('tabMacDeals').classList.toggle('active', tab==='macdeals');
  document.getElementById('tabAdoption').classList.toggle('active', tab==='adoption');
  if(persist!==false){ try{ localStorage.setItem(TAB_KEY, tab); }catch{} }
 }
 document.getElementById('tabRepos').addEventListener('click', ()=>showTab('repos'));
 document.getElementById('tabNext').addEventListener('click', ()=>showTab('next'));
+document.getElementById('tabMacDeals').addEventListener('click', ()=>{ showTab('macdeals'); loadMacDeals(); });
 document.getElementById('tabAdoption').addEventListener('click', ()=>{ showTab('adoption'); loadAdoption(); });
 let savedTab = 'repos';
 try{ savedTab = localStorage.getItem(TAB_KEY) || 'repos'; }catch{}
 showTab(savedTab, false);
 stampAt(Math.floor(Date.now()/REFRESH)*REFRESH); load(); setInterval(tick, 200);
-loadAdoption(); setInterval(loadAdoption, 30000);
+loadAdoption(); setInterval(loadAdoption, 30000); loadMacDeals();
 </script></body></html>`;
 
 const MIME = { '.svg': 'image/svg+xml', '.png': 'image/png', '.ico': 'image/x-icon', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.gif': 'image/gif' };
@@ -881,6 +1229,13 @@ http.createServer(async (req, res) => {
     refreshAdoptionCache(); // fire-and-forget; client re-polls /api/adoption
     res.writeHead(202, { 'content-type': 'application/json' });
     res.end(JSON.stringify({ ok: true, refreshing: true }));
+  } else if (req.url.startsWith('/api/mac-deals/refresh') && req.method === 'POST') {
+    refreshMacDealsCache();
+    res.writeHead(202, { 'content-type': 'application/json' });
+    res.end(JSON.stringify({ ok: true, refreshing: true }));
+  } else if (req.url.startsWith('/api/mac-deals')) {
+    res.writeHead(200, { 'content-type': 'application/json' });
+    res.end(JSON.stringify(Object.assign({ refreshing: macDealsRefreshing }, macDealsCache)));
   } else if (req.url.startsWith('/api/adoption')) {
     res.writeHead(200, { 'content-type': 'application/json' });
     res.end(JSON.stringify(Object.assign({ refreshing: adoptionRefreshing, extensionSites: readExtensionSites() }, adoptionCache)));

@@ -1,5 +1,5 @@
-Status: ready-to-commit
-Last: Dashboard Status column shows mdzip.org project-page badges (release + package) as a second line
+Status: in-progress
+Last: Implementing Mac Deals dashboard tab and Craigslist refresh flow
 
 <!-- The .github coordination hub. Dashboard reads Status:/Last:.
      Status: idle | in-progress | awaiting-test | ready-to-commit | blocked
