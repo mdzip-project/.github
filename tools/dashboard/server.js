@@ -522,22 +522,14 @@ refreshAdoptionCache();
 setInterval(refreshAdoptionCache, ADOPTION_REFRESH_MS);
 
 // ---------- Mac deals (Sacramento Craigslist) ----------
+// A few broad terms is enough — the search API returns up to 360 hits per
+// query, so the chip/model is filtered from each listing afterwards rather than
+// baked into a dozen near-duplicate searches.
 const MAC_DEAL_SEARCH_TERMS = [
-  'M1 Mac mini',
-  'Mac mini M1',
-  'Apple Silicon Mac mini',
-  'M1 MacBook Air',
-  'MacBook Air M1',
-  'M1 MacBook Pro',
-  'MacBook Pro M1',
-  'M2 Mac mini',
-  'M2 MacBook Air',
-  'M2 MacBook Pro',
-  'M3 MacBook Air',
-  'M3 MacBook Pro',
   'Mac mini',
   'MacBook Air',
   'MacBook Pro',
+  'Apple Silicon Mac',
 ];
 function clampPrice(value) {
   if (value === null || value === undefined || Number.isNaN(Number(value))) return null;
@@ -555,16 +547,10 @@ function parseStorageGb(value) {
   const gb = text.match(/(\d+)\s*GB/i); if (gb) return Number(gb[1]);
   return null;
 }
-function parseRamGb(value) {
-  if (!value) return null;
-  const m = String(value).match(/(\d+)\s*(?:GB|G)/i);
-  return m ? Number(m[1]) : null;
-}
 function normalizeModel(text) {
   const t = String(text || '').toLowerCase();
   if (t.includes('macbook pro')) return 'MacBook Pro';
   if (t.includes('macbook air')) return 'MacBook Air';
-  if (t.includes('mac mini')) return 'Mac mini';
   if (t.includes('mac mini')) return 'Mac mini';
   return null;
 }
@@ -580,14 +566,6 @@ function normalizeChip(text) {
   if (/\bM1\b/i.test(t)) return 'M1';
   if (/Apple\s+Silicon/i.test(t)) return 'Apple Silicon';
   return null;
-}
-function parseDetailsFromHtml(html) {
-  const text = String(html || '').replace(/<script[\s\S]*?<\/script>/gi, ' ')
-    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-  return text;
 }
 function rateMacDeal(item) {
   let score = 0;
@@ -712,86 +690,176 @@ function buildMacListing(item) {
   listing.valueRating = ratingLabel(listing.score);
   return listing;
 }
-async function fetchText(url, timeoutMs = 10000) {
+// Craigslist's own web UI is a JS app that calls this public JSON API; the old
+// code scraped the search *page*, which is now an empty shell, so every refresh
+// silently produced zero listings. We hit the API directly instead:
+//   search: GET /web/v8/postings/search/full?batch=<areaId>-0-360-0-0&query=...
+//   detail: GET /web/v8/postings/<uuid>?cc=US&lang=en
+const CRAIGSLIST_SAPI = 'https://sapi.craigslist.org/web/v8';
+const SACRAMENTO_AREA_ID = 12;
+const MAC_DEALS_MAX_LISTINGS = 80;       // cap detail lookups per refresh
+const MAC_DEALS_DETAIL_CONCURRENCY = 6;  // parallel detail fetches
+const MAC_DEALS_MAX_AGE_MS = 45 * 24 * 60 * 60 * 1000; // drop stale postings
+
+async function fetchJson(url, timeoutMs = 12000) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    const response = await fetch(url, { signal: controller.signal, headers: { 'User-Agent': 'Mozilla/5.0', Accept: 'text/html,application/xhtml+xml' } });
+    const response = await fetch(url, {
+      signal: controller.signal,
+      headers: { 'User-Agent': 'Mozilla/5.0', Accept: 'application/json' },
+    });
     if (!response.ok) throw new Error('HTTP ' + response.status);
-    return await response.text();
+    return await response.json();
   } finally {
     clearTimeout(timer);
   }
 }
-async function fetchCraigslistSearchResults() {
-  const results = [];
-  const seen = new Set();
-  for (const term of MAC_DEAL_SEARCH_TERMS) {
-    const url = `https://sacramento.craigslist.org/search/sss?query=${encodeURIComponent(term)}&sort=rel&srchType=A`;
-    try {
-      const html = await fetchText(url, 12000);
-      const matches = [...html.matchAll(/href=["']([^"']*sacramento\.craigslist\.org[^"']+)["'][^>]*>(?:<span[^>]*>)?([^<]+)?/gi)];
-      for (const match of matches) {
-        const href = match[1];
-        const label = (match[2] || '').trim();
-        if (!href || !/\/\w+\//.test(href)) continue;
-        if (href.includes('/search/')) continue;
-        if (!href.startsWith('http')) continue;
-        const canonical = href.split('#')[0];
-        if (seen.has(canonical)) continue;
-        seen.add(canonical);
-        results.push({ title: label || 'Craigslist listing', url: canonical, source: 'Craigslist' });
-      }
-    } catch (_) {
-      // Quietly ignore individual search failures; the dashboard continues with cached data.
+
+// The search endpoint packs each listing as a positional array plus a `decode`
+// block of base values: row[0]/row[1] are id/posted-date deltas from
+// decode.minPostingId / decode.minPostedDate, tagged sub-arrays carry the rest
+// ([6]=slug, [10]=price string, [13]=posting UUID), and the last element is the
+// title.
+function decodeCraigslistItems(payload) {
+  const data = payload && payload.data;
+  const items = (data && data.items) || [];
+  const decode = (data && data.decode) || {};
+  const minId = Number(decode.minPostingId) || 0;
+  const minPosted = Number(decode.minPostedDate) || 0;
+  const out = [];
+  for (const row of items) {
+    if (!Array.isArray(row) || row.length < 2) continue;
+    let uuid = null;
+    let slug = null;
+    let priceString = null;
+    for (const field of row) {
+      if (!Array.isArray(field)) continue;
+      if (field[0] === 13) uuid = field[1];
+      else if (field[0] === 6) slug = field[1];
+      else if (field[0] === 10) priceString = field[1];
     }
-  }
-  return results;
-}
-async function enrichMacListing(result) {
-  try {
-    const html = await fetchText(result.url, 12000);
-    const titleMatch = html.match(/<title>([^<]+)<\/title>/i) || html.match(/"og:title"\s+content="([^"]+)"/i);
-    const priceMatch = html.match(/<span[^>]*class=["'][^"']*price[^"']*["'][^>]*>([^<]+)<\/span>/i) || html.match(/\$\s*([0-9][0-9,]*(?:\.\d{2})?)/);
-    const description = parseDetailsFromHtml(html);
-    const title = titleMatch ? titleMatch[1].replace(/\s+\|\s+Craigslist/i, '').trim() : (result.title || 'Craigslist listing');
-    return buildMacListing({
-      id: String(result.url).split('/').pop() || result.url,
+    if (!uuid) continue;
+    const title = typeof row[row.length - 1] === 'string' ? row[row.length - 1] : '';
+    out.push({
+      uuid,
+      slug,
       title,
-      description,
-      location: result.location || 'Sacramento',
-      url: result.url,
-      price: parsePrice(priceMatch ? priceMatch[1] || priceMatch[0] : ''),
-      postedAt: new Date().toISOString(),
-      condition: 'good',
+      price: parsePrice(priceString),
+      postedAt: minPosted
+        ? new Date((minPosted + Number(row[1] || 0)) * 1000).toISOString()
+        : null,
+      url: slug
+        ? `https://www.craigslist.org/view/d/${slug}/${uuid}`
+        : `https://www.craigslist.org/view/${uuid}`,
     });
-  } catch {
-    return null;
   }
+  return out;
 }
-async function refreshMacDeals() {
-  const results = await fetchCraigslistSearchResults();
-  const normalized = [];
-  for (const result of results) {
+
+// Returns { results, ok, errors }: ok is the count of search terms that came
+// back, errors holds the per-term failure messages.
+async function fetchCraigslistSearchResults() {
+  const byUuid = new Map();
+  const errors = [];
+  let ok = 0;
+  for (const term of MAC_DEAL_SEARCH_TERMS) {
+    const url = `${CRAIGSLIST_SAPI}/postings/search/full?batch=${SACRAMENTO_AREA_ID}-0-360-0-0`
+      + `&cc=US&lang=en&searchPath=sss&sort=date&query=${encodeURIComponent(term)}`;
     try {
-      const spec = await enrichMacListing(result);
-      if (spec) normalized.push(spec);
-    } catch (_) {
-      // skip failed listing detail lookups
+      const decoded = decodeCraigslistItems(await fetchJson(url));
+      ok += 1;
+      for (const item of decoded) {
+        if (!byUuid.has(item.uuid)) byUuid.set(item.uuid, item);
+      }
+    } catch (e) {
+      errors.push(`"${term}": ${e.message || e}`);
     }
   }
-  const deduped = dedupeMacDeals(normalized).sort((a, b) => {
-    const rank = { BUY: 4, GOOD: 3, FAIR: 2, PASS: 1 };
+  return { results: [...byUuid.values()], ok, errors };
+}
+
+// Pull the full posting (body text, confirmed price, area) from the detail
+// endpoint. Falls back to the search row's fields if the detail fetch fails, so
+// a listing is never dropped just because one request timed out.
+async function enrichMacListing(result) {
+  let detail = null;
+  try {
+    const payload = await fetchJson(`${CRAIGSLIST_SAPI}/postings/${encodeURIComponent(result.uuid)}?cc=US&lang=en`);
+    detail = payload && payload.data && payload.data.items && payload.data.items[0];
+  } catch {
+    detail = null;
+  }
+  const description = detail && detail.body
+    ? String(detail.body).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
+    : '';
+  const price = detail && typeof detail.price === 'number' && detail.price > 0
+    ? detail.price
+    : result.price;
+  return buildMacListing({
+    id: result.uuid,
+    title: (detail && detail.title) || result.title,
+    description,
+    location: (detail && detail.location && detail.location.description) || 'Sacramento',
+    url: (detail && detail.url) || result.url,
+    price,
+    postedAt: (detail && detail.postedDate
+      ? new Date(detail.postedDate * 1000).toISOString()
+      : result.postedAt) || new Date().toISOString(),
+    condition: 'good',
+  });
+}
+
+// Run `worker` over `items` with at most `limit` calls in flight at once.
+async function mapWithConcurrency(items, limit, worker) {
+  const out = [];
+  let cursor = 0;
+  const runners = Array.from({ length: Math.min(limit, items.length) }, async () => {
+    while (cursor < items.length) {
+      const item = items[cursor++];
+      try { out.push(await worker(item)); } catch { /* skip one bad listing */ }
+    }
+  });
+  await Promise.all(runners);
+  return out;
+}
+
+async function refreshMacDeals() {
+  const { results, ok, errors } = await fetchCraigslistSearchResults();
+
+  // Every query failed — keep the last good listings and flag the failure
+  // rather than blanking the table.
+  if (ok === 0) {
+    return {
+      generated: new Date().toISOString(),
+      listings: (macDealsCache && macDealsCache.listings) || [],
+      refreshError: `Craigslist search failed (${errors[0] || 'no response'})`,
+    };
+  }
+
+  const recent = results
+    .filter((r) => !r.postedAt || Date.now() - Date.parse(r.postedAt) < MAC_DEALS_MAX_AGE_MS)
+    .slice(0, MAC_DEALS_MAX_LISTINGS);
+
+  const listings = dedupeMacDeals(
+    (await mapWithConcurrency(recent, MAC_DEALS_DETAIL_CONCURRENCY, enrichMacListing))
+      .filter((item) => item && item.formFactor && item.formFactor !== 'Unknown')
+  ).sort((a, b) => {
     const scoreDiff = Number(b.score || 0) - Number(a.score || 0);
     if (scoreDiff !== 0) return scoreDiff;
     return (a.price || Number.MAX_SAFE_INTEGER) - (b.price || Number.MAX_SAFE_INTEGER);
   });
-  const filtered = deduped.filter(item => item && item.formFactor && item.formFactor !== 'Unknown');
-  return {
-    generated: new Date().toISOString(),
-    listings: filtered,
-    refreshError: null,
-  };
+
+  // Searches ran but not one row came back for any broad term ("MacBook Pro"
+  // etc. always match something) — almost certainly the response format moved.
+  let refreshError = null;
+  if (results.length === 0) {
+    refreshError = 'Craigslist search returned no rows — the API format may have changed';
+  } else if (errors.length) {
+    refreshError = `${errors.length}/${MAC_DEAL_SEARCH_TERMS.length} searches failed (${errors[0]})`;
+  }
+
+  return { generated: new Date().toISOString(), listings, refreshError };
 }
 let macDealsCache = readJSON(MAC_DEALS_CACHE_FILE) || { generated: null, listings: [], refreshError: null };
 let macDealsRefreshing = false;

@@ -1,5 +1,28 @@
 {
-  "generated": "2026-09-06T23:36:30.125Z",
-  "listings": [],
+  "generated": "2026-09-10T23:43:39.651Z",
+  "listings": [
+    {
+      "id": "997g1GjBGhdavAzaJTGoNQ",
+      "source": "Craigslist",
+      "title": "Apple Mac Mini 2018",
+      "url": "https://www.craigslist.org/view/d/roseville-apple-mac-mini-2018/997g1GjBGhdavAzaJTGoNQ",
+      "price": 350,
+      "location": "roseville",
+      "postedAt": "2026-09-08T17:51:24.000Z",
+      "formFactor": "Mac mini",
+      "chip": "Apple Silicon",
+      "ramGb": 16,
+      "storageGb": 1024,
+      "condition": "good",
+      "verification": "needs-verification",
+      "valueRating": "PASS",
+      "score": 26,
+      "notes": [
+        "16 GB RAM",
+        "1024 GB storage",
+        "Needs Verification"
+      ]
+    }
+  ],
   "refreshError": null
 }

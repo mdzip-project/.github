@@ -134,7 +134,7 @@ repos:
   - name: mdzip-win-prev
     path: ../mdzip-win-prev
     type: apps
-    visibility: private
+    visibility: public
     role: Windows Preview Handler for .mdz
     remote: https://github.com/mdzip-project/mdzip-win-prev.git
     publishes: []
@@ -149,12 +149,12 @@ repos:
     publishes: []
     upstreams: ["@mdzip/editor"]
 
-  - name: mdzip-tm-export-gv-chat
-    path: ../mdzip-tm-export-gv-chat
+  - name: mdzip-google-voice-exporter
+    path: ../mdzip-google-voice-exporter
     type: apps
     visibility: public
-    role: Tampermonkey userscript — exports a Google Voice conversation to .mdz
-    remote: https://github.com/mdzip-project/mdzip-tm-export-gv-chat.git
+    role: userscript — exports a Google Voice conversation to .mdz
+    remote: https://github.com/mdzip-project/mdzip-google-voice-exporter.git
     publishes: []
     upstreams: ["@mdzip/core-js"]
 ```
