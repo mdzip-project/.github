@@ -37,8 +37,6 @@ Current layout (grows as needed — this isn't a prescribed target):
 │   ├── hub-architecture.md       # This file
 │   ├── dotnet-workflow.md        # Build/test/release for the .NET repos
 │   └── core-parity.md            # Active initiative detail
-├── tools/
-│   └── dashboard/                # Local workspace status dashboard
 ├── AGENTS.md                     # Hub orchestration rules for agents
 ├── CHANGELOG.md
 └── STATUS.md
@@ -112,14 +110,20 @@ hub. The owner keeps it open and uses it to decide what to do next.
 
 ### Form
 
-A small Node script in `tools/dashboard/` that scans the workspace and
-serves an **auto-refreshing local web page** (e.g. `localhost:7777`).
-Keep a browser tab open; it polls and re-renders on its own. No external
-service, no deployment — it only reads local repos.
+Its own repo, `../mdzip-dashboard` (split out of `tools/dashboard/`
+here — see that repo's `README.md` for why): a TypeScript server + Vite
+SPA that scans the workspace and serves an **auto-refreshing local web
+page** (e.g. `localhost:7777`, or hosted under IIS — see that repo's
+`docs/hosting-iis.md`). Keep a browser tab open; it polls and re-renders
+on its own. No external service, no deployment — it only reads local
+repos (and this hub's own `docs/workspace.md`, cross-repo, same as
+before the split).
 
 ### Data sources (no duplicated state)
 
--   Repo list and local paths come from `docs/workspace.md`.
+-   Repo list and local paths come from `docs/workspace.md` (this repo
+    - the dashboard reads it from a sibling repo now, same file, same
+    format, nothing moved).
 -   Git state comes from `git` directly.
 -   "Behind" is computed by reading versions straight from each
     project's `package.json`: a project is **behind** when the version

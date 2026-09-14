@@ -27,7 +27,8 @@ core parity, the detailed gap + phased plan is in
 ## STATUS.md protocol (drives the dashboard)
 
 Every product repository has a `STATUS.md`. The workspace dashboard
-(`tools/dashboard/`) reads its first two recognized lines:
+(now its own repo, `../mdzip-dashboard` — see `docs/hub-architecture.md`)
+reads its first two recognized lines:
 
 ```
 Status: <state>
@@ -91,6 +92,31 @@ Status: idle             Last: Committed streaming export
   retrofit existing UI, but any **new** UI, page, theme, or visual asset
   defaults to greyscale, with color reserved for sparing emphasis
   (status indicators, calls to action, highlights).
+- **Content style guide.** Codifies what's already the dominant, consistent
+  usage across properties — not a new convention. When copy needs to be
+  written or touched, match these; when in doubt, match the surrounding page
+  rather than inventing a new form.
+  - **Marketing-page buttons and CTAs: Title Case.** `Download for
+    Windows`, `Read the Specification`, `View Full Specification`.
+    Lowercase minor words (`the`, `a`, `for`, `to`, ...) unless first/last
+    in the label — *or* part of a page's actual proper title, e.g. `Read
+    The Problem` keeps "The" capitalized because the page itself is titled
+    "The Problem" (its `<title>` and nav link both capitalize it), unlike
+    `Read the Specification`, whose page is just titled "Specification."
+    Check the target page's own title before "fixing" this one.
+  - **Tool-page buttons: sentence case.** A separate, equally consistent
+    convention on the functional tool pages (`editor.html`, `packager.html`)
+    — `Choose file`, `Load single-doc sample`, `Open another...`. These
+    read as native app controls, not marketing CTAs; don't Title-Case them
+    to match the rule above.
+  - **Headings: Sentence case.** `Common use cases`, `Build the MDZip
+    ecosystem`, `Where to go next`. Only the first word and proper nouns
+    are capitalized.
+  - **Product names, exact forms:** `MDZip`, `MDZip Studio`, `MDZip.org`,
+    `VS Code` (not "Visual Studio Code"), `mdz` CLI (lowercase, code font
+    for the command itself — `` `mdz` ``).
+  - **`.mdz` and `.md`** are always lowercase with the leading dot, and
+    always in code font (`` `.mdz` ``), never bare prose text.
 - **Where docs go.** This hub repo is **public**. Its `docs/` folder is
   for engineering status and reference only. Conceptual design work,
   strategy, market analysis, and scratchpad notes belong in the
@@ -107,6 +133,13 @@ Status: idle             Last: Committed streaming export
   developer skills anyway, flag it as friction (logged in the
   `planning` repo's strategy findings) instead of silently working
   around it.
+- **mdzip.org SEO/content checklist.** Before touching mdzip.org content
+  or templates, check `mdzip.org/seo/checklist.md` — issue categories
+  (status drift, heading hierarchy, structured data, known false-positive
+  patterns from AI review tools, etc.) accumulated from past reviews, so
+  they get caught proactively instead of waiting for another external
+  audit to rediscover them. See `mdzip.org/CLAUDE.md` and
+  `mdzip.org/seo/README.md` for the full report-processing workflow.
 
 ## Dependencies
 

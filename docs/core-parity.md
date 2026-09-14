@@ -3,11 +3,33 @@
 Method-level map of the gap between the C# core and the TypeScript core,
 and the phased plan to close it.
 
-- **Status: parity shipped and exposed in the CLI.** `mdzip-core` **1.3.3**
-  (parity landed at `v1.3.0`, plus the 1.3.3 raw-`<img>` orphan-detection fix)
-  · `mdzip-core-js` **1.3.3** · `mdzip-cli` **1.3.0** already ships the new
-  commands (`cat`, `assets`, `manifest`, `workspace`, `info`) and consumes
-  `mdzip-core 1.3.3` via `PackageReference`.
+- **Status: parity shipped and exposed in the CLI — still true as of
+  2026-09-12.** Current versions: `mdzip-core` (now published as
+  **`MDZip.Core`**) **1.4.0** · `mdzip-core-js` **1.5.0** · `mdzip-cli`
+  **1.3.2**, whose `mdz`/`mdz.Tests` projects already reference
+  `MDZip.Core 1.4.0` (current — not behind). The new commands (`cat`,
+  `assets`, `manifest`, `workspace`, `info`) have shipped since `v1.3.0`.
+  **Re-verified 2026-09-12** (this doc had drifted to citing the older
+  1.3.3/1.3.3/1.3.0 trio as current): every core-js release since 1.3.3
+  was checked against the C# side and found to need no port —
+  - `mdzip-core` **1.4.0** — package rename only (`mdzip-core` →
+    `MDZip.Core`, to align with the npm scoped-package naming); no API
+    change.
+  - `mdzip-core-js` **1.4.0** — added a browser IIFE bundle for
+    non-bundler consumers (e.g. loading via `@require` from a CDN). Pure
+    JS distribution concern; nothing to port.
+  - `mdzip-core-js` **1.5.0** — made `extractImageReferences` a public
+    static method (consolidating a regex previously duplicated across
+    several JS packages), switched `deflateRawBytes()` from
+    `CompressionStream` to `fflate` (a JS/Electron-webview-specific
+    per-call overhead fix), and cached per-entry sizes lazily instead of
+    rescanning on every `open()`. C#'s `MdzArchive.ExtractMarkdownImageReferences`
+    already does the same dual markdown-`![]()`-plus-raw-`<img src>`
+    matching (checked side by side) — it just isn't public, and a check
+    of `mdzip-cli`/`mdzip-win-prev` found no duplicated copy of that logic
+    on the .NET side the way JS had, so there's no equivalent reason to
+    expose it. The compression-backend and caching changes are specific
+    to problems that don't exist in .NET's `System.IO.Compression`.
 - **Merged 2026-07-08.** The parity branch stack was fast-forwarded into
   `main` (now at `f782bc3`, v1.3.3) and the working branches deleted; the
   default branch matches what's released. Nothing outstanding.
@@ -129,3 +151,10 @@ anytime — fold it into Phase 1's CLI work.
 - `1.3.3` — raw-`<img>` orphan-detection fix, released together with
   `mdzip-core-js` 1.3.3. Done; `mdzip-cli` consumes it without needing its own
   version bump.
+- `1.4.0` — renamed the published package from `mdzip-core` to `MDZip.Core`
+  (no API change). `mdzip-cli` bumped its `PackageReference` to `1.4.0`.
+  core-js's own 1.4.0 (browser IIFE bundle) and 1.5.0 (public
+  `extractImageReferences`, `fflate`-based compression, entry-size caching)
+  were checked and found to be JS-runtime-specific or already matched in
+  C# — no corresponding `mdzip-core` release needed. See the Status note
+  above for the detail; re-verified 2026-09-12.

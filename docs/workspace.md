@@ -157,6 +157,15 @@ repos:
     remote: https://github.com/mdzip-project/mdzip-google-voice-exporter.git
     publishes: []
     upstreams: ["@mdzip/core-js"]
+
+  - name: mdzip-dashboard
+    path: ../mdzip-dashboard
+    type: apps
+    visibility: private
+    role: Workspace status dashboard (this page) — split out of .github/tools/dashboard/ into its own TS server + Vite SPA (exploratory scaffold, no GitHub remote yet)
+    remote: https://github.com/mdzip-project/mdzip-dashboard.git
+    publishes: []
+    upstreams: []
 ```
 
 ## Archived
