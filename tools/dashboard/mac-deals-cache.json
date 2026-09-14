@@ -1,6 +1,240 @@
 {
-  "generated": "2026-09-10T23:43:39.651Z",
+  "generated": "2026-09-14T03:38:14.337Z",
   "listings": [
+    {
+      "id": "UACP1FS3XX11XXA",
+      "source": "OWC",
+      "title": "Apple 24-inch iMac (M3 Series, Late 2023)",
+      "url": "https://eshop.macsales.com/configure-my-mac/apple-imac-apple-silicon-24-inch-late-2023?sku=UACP1FS3XX11XXA",
+      "price": 929,
+      "location": "Ships nationwide",
+      "postedAt": "2026-09-14T03:38:13.793Z",
+      "formFactor": "iMac",
+      "chip": "M3",
+      "ramGb": 8,
+      "storageGb": 256,
+      "condition": "good",
+      "verification": "confirmed",
+      "notes": [
+        "8GB Memory",
+        "256GB SSD Storage",
+        "8-Core Apple M3 Processor"
+      ],
+      "score": 77,
+      "reasons": [
+        "Certified refurbished with warranty (OWC) (+15)",
+        "Chip confirmed in listing text (+40)",
+        "Only 8 GB RAM (+8)",
+        "$929 is a good price for M3 (+5)",
+        "Condition confirmed good (+5)",
+        "Newer chip (M3) bonus (+4)"
+      ],
+      "valueRating": "GOOD"
+    },
+    {
+      "id": "UAEJ1FS3XXXXXXA",
+      "source": "OWC",
+      "title": "Apple Mac mini (M2 Series, Early 2023)",
+      "url": "https://eshop.macsales.com/configure-my-mac/apple-mac-mini-apple-silicon-early-2023?sku=UAEJ1FS3XXXXXXA",
+      "price": 599,
+      "location": "Ships nationwide",
+      "postedAt": "2026-09-14T03:38:12.932Z",
+      "formFactor": "Mac mini",
+      "chip": "M2 Pro",
+      "ramGb": 8,
+      "storageGb": 256,
+      "condition": "good",
+      "verification": "confirmed",
+      "notes": [
+        "Memory up to 32GB",
+        "Storage up to 2.0TB SSD",
+        "Up to 12-Core Apple M2 Pro Processor"
+      ],
+      "score": 76,
+      "reasons": [
+        "Certified refurbished with warranty (OWC) (+15)",
+        "Chip confirmed in listing text (+40)",
+        "Only 8 GB RAM (+8)",
+        "$599 is a good price for M2 Pro (+8)",
+        "Condition confirmed good (+5)"
+      ],
+      "valueRating": "GOOD"
+    },
+    {
+      "id": "UAOO1HS62XXXXXB",
+      "source": "OWC",
+      "title": "Apple 13-inch MacBook Pro (M1 Series, Touch Bar, Late 2020)",
+      "url": "https://eshop.macsales.com/configure-my-mac/apple-macbook-pro-apple-silicon-13-inch-late-2020?sku=UAOO1HS62XXXXXB",
+      "price": 799,
+      "location": "Ships nationwide",
+      "postedAt": "2026-09-14T03:38:13.883Z",
+      "formFactor": "MacBook Pro",
+      "chip": "M1",
+      "ramGb": 16,
+      "storageGb": 1024,
+      "condition": "good",
+      "verification": "confirmed",
+      "notes": [
+        "16GB Memory",
+        "1.0TB SSD Storage",
+        "8-Core Apple M1 Processor"
+      ],
+      "score": 70,
+      "reasons": [
+        "Certified refurbished with warranty (OWC) (+15)",
+        "Chip confirmed in listing text (+40)",
+        "16 GB RAM (+20)",
+        "$799 is high for M1 (-10)",
+        "Condition confirmed good (+5)"
+      ],
+      "valueRating": "GOOD"
+    },
+    {
+      "id": "UAOP1HS42XXXXXB",
+      "source": "OWC",
+      "title": "Apple 14-inch MacBook Pro (M1 Series, Late 2021)",
+      "url": "https://eshop.macsales.com/configure-my-mac/apple-macbook-pro-apple-silicon-14-inch-late-2021?sku=UAOP1HS42XXXXXB",
+      "price": 849,
+      "location": "Ships nationwide",
+      "postedAt": "2026-09-14T03:38:13.897Z",
+      "formFactor": "MacBook Pro",
+      "chip": "M1 Pro",
+      "ramGb": 16,
+      "storageGb": 512,
+      "condition": "good",
+      "verification": "confirmed",
+      "notes": [
+        "Memory up to 64GB",
+        "Storage up to 2.0TB SSD",
+        "Up to 10-Core Apple M1 Max Processor"
+      ],
+      "score": 70,
+      "reasons": [
+        "Certified refurbished with warranty (OWC) (+15)",
+        "Chip confirmed in listing text (+40)",
+        "16 GB RAM (+20)",
+        "$849 is high for M1 Pro (-10)",
+        "Condition confirmed good (+5)"
+      ],
+      "valueRating": "GOOD"
+    },
+    {
+      "id": "UARB1HS4X2XXXXC",
+      "source": "OWC",
+      "title": "Apple 16-inch MacBook Pro (M1 Series, Late 2021)",
+      "url": "https://eshop.macsales.com/configure-my-mac/apple-macbook-pro-apple-silicon-16-inch-late-2021?sku=UARB1HS4X2XXXXC",
+      "price": 929,
+      "location": "Ships nationwide",
+      "postedAt": "2026-09-14T03:38:13.661Z",
+      "formFactor": "MacBook Pro",
+      "chip": "M1 Pro",
+      "ramGb": 16,
+      "storageGb": 512,
+      "condition": "good",
+      "verification": "confirmed",
+      "notes": [
+        "Memory up to 64GB",
+        "Storage up to 2.0TB SSD",
+        "Up to 10-Core Apple M1 Max Processor"
+      ],
+      "score": 70,
+      "reasons": [
+        "Certified refurbished with warranty (OWC) (+15)",
+        "Chip confirmed in listing text (+40)",
+        "16 GB RAM (+20)",
+        "$929 is high for M1 Pro (-10)",
+        "Condition confirmed good (+5)"
+      ],
+      "valueRating": "GOOD"
+    },
+    {
+      "id": "UAOQ1FS32XXXXXA",
+      "source": "OWC",
+      "title": "Apple 13-inch MacBook Pro (M2 Series, Touch Bar, Mid 2022)",
+      "url": "https://eshop.macsales.com/configure-my-mac/apple-macbook-pro-apple-silicon-13-inch-mid-2022?sku=UAOQ1FS32XXXXXA",
+      "price": 819,
+      "location": "Ships nationwide",
+      "postedAt": "2026-09-14T03:38:13.741Z",
+      "formFactor": "MacBook Pro",
+      "chip": "M2",
+      "ramGb": 8,
+      "storageGb": 256,
+      "condition": "good",
+      "verification": "confirmed",
+      "notes": [
+        "Memory up to 16GB",
+        "Storage up to 1.0TB SSD",
+        "8-Core Apple M2 Processor"
+      ],
+      "score": 60,
+      "reasons": [
+        "Certified refurbished with warranty (OWC) (+15)",
+        "Chip confirmed in listing text (+40)",
+        "Only 8 GB RAM (+8)",
+        "$819 is high for M2 (-10)",
+        "Condition confirmed good (+5)",
+        "Newer chip (M2) bonus (+2)"
+      ],
+      "valueRating": "FAIR"
+    },
+    {
+      "id": "UAEI1FS3XXXXXXA",
+      "source": "OWC",
+      "title": "Apple Mac mini (M1 Series, Late 2020)",
+      "url": "https://eshop.macsales.com/configure-my-mac/apple-mac-mini-apple-silicon-late-2020?sku=UAEI1FS3XXXXXXA",
+      "price": 499,
+      "location": "Ships nationwide",
+      "postedAt": "2026-09-14T03:38:12.980Z",
+      "formFactor": "Mac mini",
+      "chip": "M1",
+      "ramGb": 8,
+      "storageGb": 256,
+      "condition": "good",
+      "verification": "confirmed",
+      "notes": [
+        "Memory up to 16GB",
+        "Storage up to 2.0TB SSD",
+        "8-Core Apple M1 Processor"
+      ],
+      "score": 58,
+      "reasons": [
+        "Certified refurbished with warranty (OWC) (+15)",
+        "Chip confirmed in listing text (+40)",
+        "Only 8 GB RAM (+8)",
+        "$499 is high for M1 (-10)",
+        "Condition confirmed good (+5)"
+      ],
+      "valueRating": "FAIR"
+    },
+    {
+      "id": "UACO1FS3XX25XXA",
+      "source": "OWC",
+      "title": "Apple 24-inch iMac (M1 Series, Mid 2021)",
+      "url": "https://eshop.macsales.com/configure-my-mac/apple-imac-apple-silicon-24-inch-mid-2021?sku=UACO1FS3XX25XXA",
+      "price": 649,
+      "location": "Ships nationwide",
+      "postedAt": "2026-09-14T03:38:13.795Z",
+      "formFactor": "iMac",
+      "chip": "M1",
+      "ramGb": 8,
+      "storageGb": 256,
+      "condition": "good",
+      "verification": "confirmed",
+      "notes": [
+        "Memory up to 16GB",
+        "Storage up to 1.0TB SSD",
+        "8-Core Apple M1 Processor"
+      ],
+      "score": 58,
+      "reasons": [
+        "Certified refurbished with warranty (OWC) (+15)",
+        "Chip confirmed in listing text (+40)",
+        "Only 8 GB RAM (+8)",
+        "$649 is high for M1 (-10)",
+        "Condition confirmed good (+5)"
+      ],
+      "valueRating": "FAIR"
+    },
     {
       "id": "997g1GjBGhdavAzaJTGoNQ",
       "source": "Craigslist",
@@ -13,16 +247,53 @@
       "chip": "Apple Silicon",
       "ramGb": 16,
       "storageGb": 1024,
-      "condition": "good",
+      "condition": "unknown",
       "verification": "needs-verification",
       "valueRating": "PASS",
-      "score": 26,
+      "score": 18,
       "notes": [
         "16 GB RAM",
         "1024 GB storage",
         "Needs Verification"
+      ],
+      "reasons": [
+        "Chip unconfirmed — generic \"Apple Silicon\" guess",
+        "16 GB RAM (+20)",
+        "$350 is a good price for Apple Silicon (+8)",
+        "Condition not mentioned",
+        "Unconfirmed-chip penalty (-10)"
+      ]
+    },
+    {
+      "id": "iddmab2h8FUurNLpuV9Q4C",
+      "source": "Craigslist",
+      "title": "MacBook Air Computer",
+      "url": "https://www.craigslist.org/view/d/woodland-macbook-air-computer/iddmab2h8FUurNLpuV9Q4C",
+      "price": 75,
+      "location": "Woodland",
+      "postedAt": "2026-09-06T23:26:22.000Z",
+      "formFactor": "MacBook Air",
+      "chip": "Apple Silicon",
+      "ramGb": 4,
+      "storageGb": 4,
+      "condition": "unknown",
+      "verification": "needs-verification",
+      "valueRating": "PASS",
+      "score": 15,
+      "notes": [
+        "4 GB RAM",
+        "4 GB storage",
+        "Needs Verification"
+      ],
+      "reasons": [
+        "Chip unconfirmed — generic \"Apple Silicon\" guess",
+        "4 GB RAM",
+        "$75 is a good price for Apple Silicon (+25)",
+        "Condition not mentioned",
+        "Unconfirmed-chip penalty (-10)"
       ]
     }
   ],
-  "refreshError": null
+  "refreshError": null,
+  "owcError": null
 }
