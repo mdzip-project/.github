@@ -1,23 +1,23 @@
 {
-  "generated": "2026-09-14T03:38:14.337Z",
+  "generated": "2026-09-16T08:08:05.339Z",
   "listings": [
     {
-      "id": "UACP1FS3XX11XXA",
+      "id": "UAUB1FS34XXXXXC",
       "source": "OWC",
-      "title": "Apple 24-inch iMac (M3 Series, Late 2023)",
-      "url": "https://eshop.macsales.com/configure-my-mac/apple-imac-apple-silicon-24-inch-late-2023?sku=UACP1FS3XX11XXA",
-      "price": 929,
+      "title": "Apple 15-inch MacBook Air (M3 Series, Early 2024)",
+      "url": "https://eshop.macsales.com/configure-my-mac/apple-macbook-air-apple-silicon-15-inch-early-2024?sku=UAUB1FS34XXXXXC",
+      "price": 949,
       "location": "Ships nationwide",
-      "postedAt": "2026-09-14T03:38:13.793Z",
-      "formFactor": "iMac",
+      "postedAt": "2026-09-16T08:08:03.899Z",
+      "formFactor": "MacBook Air",
       "chip": "M3",
       "ramGb": 8,
       "storageGb": 256,
       "condition": "good",
       "verification": "confirmed",
       "notes": [
-        "8GB Memory",
-        "256GB SSD Storage",
+        "Memory up to 24GB",
+        "Storage up to 2.0TB SSD",
         "8-Core Apple M3 Processor"
       ],
       "score": 77,
@@ -25,58 +25,87 @@
         "Certified refurbished with warranty (OWC) (+15)",
         "Chip confirmed in listing text (+40)",
         "Only 8 GB RAM (+8)",
-        "$929 is a good price for M3 (+5)",
+        "$949 is a good price for M3 (+5)",
         "Condition confirmed good (+5)",
         "Newer chip (M3) bonus (+4)"
       ],
       "valueRating": "GOOD"
     },
     {
-      "id": "UAEJ1FS3XXXXXXA",
-      "source": "OWC",
-      "title": "Apple Mac mini (M2 Series, Early 2023)",
-      "url": "https://eshop.macsales.com/configure-my-mac/apple-mac-mini-apple-silicon-early-2023?sku=UAEJ1FS3XXXXXXA",
-      "price": 599,
-      "location": "Ships nationwide",
-      "postedAt": "2026-09-14T03:38:12.932Z",
+      "id": "nPkwH2o1okA8vyRQNTnTp7",
+      "source": "Craigslist",
+      "title": "Mac Mini M4 16GB Ram / 256GB SSD",
+      "url": "https://www.craigslist.org/view/d/berkeley-mac-mini-m4-16gb-ram-256gb-ssd/nPkwH2o1okA8vyRQNTnTp7",
+      "price": 500,
+      "location": "Sacramento",
+      "postedAt": "2026-08-24T21:15:47.000Z",
       "formFactor": "Mac mini",
-      "chip": "M2 Pro",
-      "ramGb": 8,
+      "chip": "M4",
+      "ramGb": 16,
+      "storageGb": 16,
+      "condition": "unknown",
+      "verification": "confirmed",
+      "valueRating": "GOOD",
+      "score": 76,
+      "notes": [
+        "16 GB RAM",
+        "16 GB storage"
+      ],
+      "reasons": [
+        "Chip confirmed in listing text (+40)",
+        "16 GB RAM (+20)",
+        "$500 is a good price for M4 (+10)",
+        "Condition not mentioned",
+        "Newer chip (M4) bonus (+6)"
+      ]
+    },
+    {
+      "id": "UAKO1HS31XXXXXC",
+      "source": "OWC",
+      "title": "Apple 13-inch MacBook Air (M2 Series, Mid 2022)",
+      "url": "https://eshop.macsales.com/configure-my-mac/apple-macbook-air-apple-silicon-13-inch-mid-2022?sku=UAKO1HS31XXXXXC",
+      "price": 729,
+      "location": "Ships nationwide",
+      "postedAt": "2026-09-16T08:08:03.859Z",
+      "formFactor": "MacBook Air",
+      "chip": "M2",
+      "ramGb": 16,
       "storageGb": 256,
       "condition": "good",
       "verification": "confirmed",
       "notes": [
-        "Memory up to 32GB",
+        "Memory up to 24GB",
         "Storage up to 2.0TB SSD",
-        "Up to 12-Core Apple M2 Pro Processor"
+        "8-Core Apple M2 Processor"
       ],
-      "score": 76,
+      "score": 72,
       "reasons": [
         "Certified refurbished with warranty (OWC) (+15)",
         "Chip confirmed in listing text (+40)",
-        "Only 8 GB RAM (+8)",
-        "$599 is a good price for M2 Pro (+8)",
-        "Condition confirmed good (+5)"
+        "16 GB RAM (+20)",
+        "$729 is high for M2 (-10)",
+        "Condition confirmed good (+5)",
+        "Newer chip (M2) bonus (+2)"
       ],
       "valueRating": "GOOD"
     },
     {
-      "id": "UAOO1HS62XXXXXB",
+      "id": "UAKN1HS32XXXXXC",
       "source": "OWC",
-      "title": "Apple 13-inch MacBook Pro (M1 Series, Touch Bar, Late 2020)",
-      "url": "https://eshop.macsales.com/configure-my-mac/apple-macbook-pro-apple-silicon-13-inch-late-2020?sku=UAOO1HS62XXXXXB",
-      "price": 799,
+      "title": "Apple 13-inch MacBook Air (M1 Series, Late 2020)",
+      "url": "https://eshop.macsales.com/configure-my-mac/apple-macbook-air-apple-silicon-13-inch-late-2020?sku=UAKN1HS32XXXXXC",
+      "price": 599,
       "location": "Ships nationwide",
-      "postedAt": "2026-09-14T03:38:13.883Z",
-      "formFactor": "MacBook Pro",
+      "postedAt": "2026-09-16T08:08:03.943Z",
+      "formFactor": "MacBook Air",
       "chip": "M1",
       "ramGb": 16,
-      "storageGb": 1024,
+      "storageGb": 256,
       "condition": "good",
       "verification": "confirmed",
       "notes": [
-        "16GB Memory",
-        "1.0TB SSD Storage",
+        "Memory up to 16GB",
+        "Storage up to 1.0TB SSD",
         "8-Core Apple M1 Processor"
       ],
       "score": 70,
@@ -84,19 +113,48 @@
         "Certified refurbished with warranty (OWC) (+15)",
         "Chip confirmed in listing text (+40)",
         "16 GB RAM (+20)",
-        "$799 is high for M1 (-10)",
+        "$599 is high for M1 (-10)",
         "Condition confirmed good (+5)"
       ],
       "valueRating": "GOOD"
     },
     {
-      "id": "UAOP1HS42XXXXXB",
+      "id": "UAOO1HS32XXXXXB",
+      "source": "OWC",
+      "title": "Apple 13-inch MacBook Pro (M1 Series, Touch Bar, Late 2020)",
+      "url": "https://eshop.macsales.com/configure-my-mac/apple-macbook-pro-apple-silicon-13-inch-late-2020?sku=UAOO1HS32XXXXXB",
+      "price": 619,
+      "location": "Ships nationwide",
+      "postedAt": "2026-09-16T08:08:04.450Z",
+      "formFactor": "MacBook Pro",
+      "chip": "M1",
+      "ramGb": 16,
+      "storageGb": 256,
+      "condition": "good",
+      "verification": "confirmed",
+      "notes": [
+        "16GB Memory",
+        "Storage up to 1.0TB SSD",
+        "8-Core Apple M1 Processor"
+      ],
+      "score": 70,
+      "reasons": [
+        "Certified refurbished with warranty (OWC) (+15)",
+        "Chip confirmed in listing text (+40)",
+        "16 GB RAM (+20)",
+        "$619 is high for M1 (-10)",
+        "Condition confirmed good (+5)"
+      ],
+      "valueRating": "GOOD"
+    },
+    {
+      "id": "UAOP1HS42XXXXXC",
       "source": "OWC",
       "title": "Apple 14-inch MacBook Pro (M1 Series, Late 2021)",
-      "url": "https://eshop.macsales.com/configure-my-mac/apple-macbook-pro-apple-silicon-14-inch-late-2021?sku=UAOP1HS42XXXXXB",
-      "price": 849,
+      "url": "https://eshop.macsales.com/configure-my-mac/apple-macbook-pro-apple-silicon-14-inch-late-2021?sku=UAOP1HS42XXXXXC",
+      "price": 799,
       "location": "Ships nationwide",
-      "postedAt": "2026-09-14T03:38:13.897Z",
+      "postedAt": "2026-09-16T08:08:04.212Z",
       "formFactor": "MacBook Pro",
       "chip": "M1 Pro",
       "ramGb": 16,
@@ -113,19 +171,77 @@
         "Certified refurbished with warranty (OWC) (+15)",
         "Chip confirmed in listing text (+40)",
         "16 GB RAM (+20)",
-        "$849 is high for M1 Pro (-10)",
+        "$799 is high for M1 Pro (-10)",
         "Condition confirmed good (+5)"
       ],
       "valueRating": "GOOD"
     },
     {
-      "id": "UARB1HS4X2XXXXC",
+      "id": "UAEI1HS7XXXXXXB",
+      "source": "OWC",
+      "title": "Apple Mac mini (M1 Series, Late 2020)",
+      "url": "https://eshop.macsales.com/configure-my-mac/apple-mac-mini-apple-silicon-late-2020?sku=UAEI1HS7XXXXXXB",
+      "price": 869,
+      "location": "Ships nationwide",
+      "postedAt": "2026-09-16T08:08:03.931Z",
+      "formFactor": "Mac mini",
+      "chip": "M1",
+      "ramGb": 16,
+      "storageGb": 2048,
+      "condition": "good",
+      "verification": "confirmed",
+      "notes": [
+        "16GB Memory",
+        "2.0TB SSD Storage",
+        "8-Core Apple M1 Processor"
+      ],
+      "score": 70,
+      "reasons": [
+        "Certified refurbished with warranty (OWC) (+15)",
+        "Chip confirmed in listing text (+40)",
+        "16 GB RAM (+20)",
+        "$869 is high for M1 (-10)",
+        "Condition confirmed good (+5)"
+      ],
+      "valueRating": "GOOD"
+    },
+    {
+      "id": "UAEJ2HS4XXXXXXA",
+      "source": "OWC",
+      "title": "Apple Mac mini (M2 Series, Early 2023)",
+      "url": "https://eshop.macsales.com/configure-my-mac/apple-mac-mini-apple-silicon-early-2023?sku=UAEJ2HS4XXXXXXA",
+      "price": 949,
+      "location": "Ships nationwide",
+      "postedAt": "2026-09-16T08:08:04.059Z",
+      "formFactor": "Mac mini",
+      "chip": "M2 Pro",
+      "ramGb": 16,
+      "storageGb": 512,
+      "condition": "good",
+      "verification": "confirmed",
+      "notes": [
+        "Memory up to 32GB",
+        "Storage up to 1.0TB SSD",
+        "Up to 12-Core Apple M2 Pro Processor"
+      ],
+      "score": 70,
+      "reasons": [
+        "Certified refurbished with warranty (OWC) (+15)",
+        "Chip confirmed in listing text (+40)",
+        "16 GB RAM (+20)",
+        "$949 is high for M2 Pro (-10)",
+        "Condition confirmed good (+5)"
+      ],
+      "valueRating": "GOOD"
+    },
+    {
+      "id": "UARB1HS4X2XXXXB",
       "source": "OWC",
       "title": "Apple 16-inch MacBook Pro (M1 Series, Late 2021)",
-      "url": "https://eshop.macsales.com/configure-my-mac/apple-macbook-pro-apple-silicon-16-inch-late-2021?sku=UARB1HS4X2XXXXC",
-      "price": 929,
+      "url": "https://eshop.macsales.com/configure-my-mac/apple-macbook-pro-apple-silicon-16-inch-late-2021?sku=UARB1HS4X2XXXXB",
+      "price": 979,
       "location": "Ships nationwide",
-      "postedAt": "2026-09-14T03:38:13.661Z",
+      "postedAt": "2026-09-16T08:08:04.228Z",
       "formFactor": "MacBook Pro",
       "chip": "M1 Pro",
       "ramGb": 16,
@@ -142,10 +258,38 @@
         "Certified refurbished with warranty (OWC) (+15)",
         "Chip confirmed in listing text (+40)",
         "16 GB RAM (+20)",
-        "$929 is high for M1 Pro (-10)",
+        "$979 is high for M1 Pro (-10)",
         "Condition confirmed good (+5)"
       ],
       "valueRating": "GOOD"
+    },
+    {
+      "id": "89tBVygKWGCtKqsKGe8Z1V",
+      "source": "Craigslist",
+      "title": "MacBook Air 13.6\" M3 8GB-RAM 256GB-SSD (Better than Neo)",
+      "url": "https://www.craigslist.org/view/d/sacramento-macbook-air-136-m3-8gb-ram/89tBVygKWGCtKqsKGe8Z1V",
+      "price": 750,
+      "location": "Sacramento",
+      "postedAt": "2026-09-04T20:53:14.000Z",
+      "formFactor": "MacBook Air",
+      "chip": "M3",
+      "ramGb": 8,
+      "storageGb": 8,
+      "condition": "good",
+      "verification": "confirmed",
+      "valueRating": "FAIR",
+      "score": 62,
+      "notes": [
+        "8 GB RAM",
+        "8 GB storage"
+      ],
+      "reasons": [
+        "Chip confirmed in listing text (+40)",
+        "Only 8 GB RAM (+8)",
+        "$750 is a good price for M3 (+5)",
+        "Condition confirmed good (+5)",
+        "Newer chip (M3) bonus (+4)"
+      ]
     },
     {
       "id": "UAOQ1FS32XXXXXA",
@@ -154,7 +298,7 @@
       "url": "https://eshop.macsales.com/configure-my-mac/apple-macbook-pro-apple-silicon-13-inch-mid-2022?sku=UAOQ1FS32XXXXXA",
       "price": 819,
       "location": "Ships nationwide",
-      "postedAt": "2026-09-14T03:38:13.741Z",
+      "postedAt": "2026-09-16T08:08:04.257Z",
       "formFactor": "MacBook Pro",
       "chip": "M2",
       "ramGb": 8,
@@ -162,7 +306,7 @@
       "condition": "good",
       "verification": "confirmed",
       "notes": [
-        "Memory up to 16GB",
+        "Memory up to 24GB",
         "Storage up to 1.0TB SSD",
         "8-Core Apple M2 Processor"
       ],
@@ -178,42 +322,13 @@
       "valueRating": "FAIR"
     },
     {
-      "id": "UAEI1FS3XXXXXXA",
-      "source": "OWC",
-      "title": "Apple Mac mini (M1 Series, Late 2020)",
-      "url": "https://eshop.macsales.com/configure-my-mac/apple-mac-mini-apple-silicon-late-2020?sku=UAEI1FS3XXXXXXA",
-      "price": 499,
-      "location": "Ships nationwide",
-      "postedAt": "2026-09-14T03:38:12.980Z",
-      "formFactor": "Mac mini",
-      "chip": "M1",
-      "ramGb": 8,
-      "storageGb": 256,
-      "condition": "good",
-      "verification": "confirmed",
-      "notes": [
-        "Memory up to 16GB",
-        "Storage up to 2.0TB SSD",
-        "8-Core Apple M1 Processor"
-      ],
-      "score": 58,
-      "reasons": [
-        "Certified refurbished with warranty (OWC) (+15)",
-        "Chip confirmed in listing text (+40)",
-        "Only 8 GB RAM (+8)",
-        "$499 is high for M1 (-10)",
-        "Condition confirmed good (+5)"
-      ],
-      "valueRating": "FAIR"
-    },
-    {
-      "id": "UACO1FS3XX25XXA",
+      "id": "UACO2FS3XX25XXA",
       "source": "OWC",
       "title": "Apple 24-inch iMac (M1 Series, Mid 2021)",
-      "url": "https://eshop.macsales.com/configure-my-mac/apple-imac-apple-silicon-24-inch-mid-2021?sku=UACO1FS3XX25XXA",
-      "price": 649,
+      "url": "https://eshop.macsales.com/configure-my-mac/apple-imac-apple-silicon-24-inch-mid-2021?sku=UACO2FS3XX25XXA",
+      "price": 699,
       "location": "Ships nationwide",
-      "postedAt": "2026-09-14T03:38:13.795Z",
+      "postedAt": "2026-09-16T08:08:04.829Z",
       "formFactor": "iMac",
       "chip": "M1",
       "ramGb": 8,
@@ -230,10 +345,67 @@
         "Certified refurbished with warranty (OWC) (+15)",
         "Chip confirmed in listing text (+40)",
         "Only 8 GB RAM (+8)",
-        "$649 is high for M1 (-10)",
+        "$699 is high for M1 (-10)",
         "Condition confirmed good (+5)"
       ],
       "valueRating": "FAIR"
+    },
+    {
+      "id": "aSTyjK6MeLFxpKNq6kMyho",
+      "source": "Craigslist",
+      "title": "13\" Apple MacBook Air M1 (2020) 8GB/128GB",
+      "url": "https://www.craigslist.org/view/d/rough-and-ready-13-apple-macbook-air-gb/aSTyjK6MeLFxpKNq6kMyho",
+      "price": 320,
+      "location": "Rough and Ready",
+      "postedAt": "2026-08-24T19:22:09.000Z",
+      "formFactor": "MacBook Air",
+      "chip": "M2",
+      "ramGb": 8,
+      "storageGb": 8,
+      "condition": "poor",
+      "verification": "confirmed",
+      "valueRating": "FAIR",
+      "score": 55,
+      "notes": [
+        "8 GB RAM",
+        "8 GB storage"
+      ],
+      "reasons": [
+        "Chip confirmed in listing text (+40)",
+        "Only 8 GB RAM (+8)",
+        "$320 is a good price for M2 (+15)",
+        "Listing wording suggests rough condition (-10)",
+        "Newer chip (M2) bonus (+2)"
+      ]
+    },
+    {
+      "id": "qGatfM7wwLoK75xv9bWi25",
+      "source": "Craigslist",
+      "title": "Late 2012 Mac Mini i7 16GB RAM, 1TB Fusion Drive",
+      "url": "https://www.craigslist.org/view/d/berkeley-late-2012-mac-mini-i7-16gb-ram/qGatfM7wwLoK75xv9bWi25",
+      "price": 160,
+      "location": "Sacramento",
+      "postedAt": "2026-09-02T07:50:52.000Z",
+      "formFactor": "Mac mini",
+      "chip": "Apple Silicon",
+      "ramGb": 16,
+      "storageGb": 1024,
+      "condition": "good",
+      "verification": "needs-verification",
+      "valueRating": "PASS",
+      "score": 40,
+      "notes": [
+        "16 GB RAM",
+        "1024 GB storage",
+        "Needs Verification"
+      ],
+      "reasons": [
+        "Chip unconfirmed — generic \"Apple Silicon\" guess",
+        "16 GB RAM (+20)",
+        "$160 is a good price for Apple Silicon (+25)",
+        "Condition confirmed good (+5)",
+        "Unconfirmed-chip penalty (-10)"
+      ]
     },
     {
       "id": "997g1GjBGhdavAzaJTGoNQ",
@@ -289,6 +461,90 @@
         "Chip unconfirmed — generic \"Apple Silicon\" guess",
         "4 GB RAM",
         "$75 is a good price for Apple Silicon (+25)",
+        "Condition not mentioned",
+        "Unconfirmed-chip penalty (-10)"
+      ]
+    },
+    {
+      "id": "qqyvLRzd6W6oCeYkUQQjpv",
+      "source": "Craigslist",
+      "title": "Macbook air 11”",
+      "url": "https://www.craigslist.org/view/d/roseville-macbook-air-11/qqyvLRzd6W6oCeYkUQQjpv",
+      "price": 90,
+      "location": "Sacramento",
+      "postedAt": "2026-09-08T19:17:17.000Z",
+      "formFactor": "MacBook Air",
+      "chip": "Apple Silicon",
+      "ramGb": null,
+      "storageGb": null,
+      "condition": "unknown",
+      "verification": "needs-verification",
+      "valueRating": "PASS",
+      "score": 15,
+      "notes": [
+        "RAM unknown",
+        "Needs Verification"
+      ],
+      "reasons": [
+        "Chip unconfirmed — generic \"Apple Silicon\" guess",
+        "RAM not listed",
+        "$90 is a good price for Apple Silicon (+25)",
+        "Condition not mentioned",
+        "Unconfirmed-chip penalty (-10)"
+      ]
+    },
+    {
+      "id": "7SMkaaLxtxemSgcKvTY8Ts",
+      "source": "Craigslist",
+      "title": "Mac Mini Catalina Version 10.15.7",
+      "url": "https://www.craigslist.org/view/d/pleasanton-mac-mini-catalina-version/7SMkaaLxtxemSgcKvTY8Ts",
+      "price": 350,
+      "location": "Sacramento",
+      "postedAt": "2026-09-15T05:15:45.000Z",
+      "formFactor": "Mac mini",
+      "chip": "Apple Silicon",
+      "ramGb": null,
+      "storageGb": null,
+      "condition": "unknown",
+      "verification": "needs-verification",
+      "valueRating": "PASS",
+      "score": 0,
+      "notes": [
+        "RAM unknown",
+        "Needs Verification"
+      ],
+      "reasons": [
+        "Chip unconfirmed — generic \"Apple Silicon\" guess",
+        "RAM not listed",
+        "$350 is a good price for Apple Silicon (+8)",
+        "Condition not mentioned",
+        "Unconfirmed-chip penalty (-10)"
+      ]
+    },
+    {
+      "id": "gu6bTBD1U2KjhHWYt16m5y",
+      "source": "Craigslist",
+      "title": "MacBook Air 2020",
+      "url": "https://www.craigslist.org/view/d/roseville-macbook-air-2020/gu6bTBD1U2KjhHWYt16m5y",
+      "price": 500,
+      "location": "Sacramento",
+      "postedAt": "2026-09-04T20:58:59.000Z",
+      "formFactor": "MacBook Air",
+      "chip": "Apple Silicon",
+      "ramGb": null,
+      "storageGb": null,
+      "condition": "unknown",
+      "verification": "needs-verification",
+      "valueRating": "PASS",
+      "score": 0,
+      "notes": [
+        "RAM unknown",
+        "Needs Verification"
+      ],
+      "reasons": [
+        "Chip unconfirmed — generic \"Apple Silicon\" guess",
+        "RAM not listed",
+        "$500 is high for Apple Silicon (-10)",
         "Condition not mentioned",
         "Unconfirmed-chip penalty (-10)"
       ]
