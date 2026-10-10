@@ -21,9 +21,9 @@ lower than the producing repo's current `package.json` `version`.
 
 | Package | Produced by | Current version |
 |---|---|---|
-| `@mdzip/core-js` | `mdzip-core-js` | 1.3.3 |
-| `@mdzip/editor` | `mdzip-editor` | 1.3.15 |
-| `@mdzip/editor-ng` | `mdzip-editor` | 1.3.15 |
+| `@mdzip/core-js` | `mdzip-core-js` | 1.5.0 |
+| `@mdzip/editor` | `mdzip-editor` | 1.5.0 |
+| `@mdzip/editor-ng` | `mdzip-editor` | 1.5.0 |
 
 ## Repositories
 
@@ -155,6 +155,15 @@ repos:
     visibility: public
     role: userscript — exports a Google Voice conversation to .mdz
     remote: https://github.com/mdzip-project/mdzip-google-voice-exporter.git
+    publishes: []
+    upstreams: ["@mdzip/core-js"]
+
+  - name: mdzip-obsidian
+    path: ../mdzip-obsidian
+    type: apps
+    visibility: private
+    role: Obsidian plugin — read/write .mdz single-document archives
+    remote: https://github.com/mdzip-project/mdzip-obsidian.git
     publishes: []
     upstreams: ["@mdzip/core-js"]
 
