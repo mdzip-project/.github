@@ -24,6 +24,8 @@ lower than the producing repo's current `package.json` `version`.
 | `@mdzip/core-js` | `mdzip-core-js` | 1.5.0 |
 | `@mdzip/editor` | `mdzip-editor` | 1.5.0 |
 | `@mdzip/editor-ng` | `mdzip-editor` | 1.5.0 |
+| `mdzip-core` (PyPI) | `mdzip-core-python` | 0.1.0 (unreleased) |
+| `markitdown-mdzip` (PyPI) | `mdzip-markitdown` | 0.1.0 (unreleased) |
 
 ## Repositories
 
@@ -102,6 +104,24 @@ repos:
     local_origin_stale: https://github.com/kylemwhite/mdz-cli.git  # redirects; update with git remote set-url
     publishes: []
     upstreams: ["MDZip.Core (NuGet)"]   # C# PackageReference, not npm — see Review notes
+
+  - name: mdzip-core-python
+    path: ../mdzip-core-python
+    type: core
+    visibility: private
+    role: Core Python library — read/write .mdz per spec 1.2.0, stdlib only (local repo, no GitHub remote yet; to publish on PyPI as mdzip-core)
+    remote: https://github.com/mdzip-project/mdzip-core-python.git
+    publishes: ["mdzip-core (PyPI)"]
+    upstreams: []   # no package.json; version lives in src/mdzip/_version.py
+
+  - name: mdzip-markitdown
+    path: ../mdzip-markitdown
+    type: apps
+    visibility: private
+    role: MarkItDown plugin — .mdz → Markdown, plus markitdown-mdz (Word/PowerPoint/HTML → .mdz with images), via mdzip-core (Python) (local repo, no GitHub remote yet; to publish on PyPI as markitdown-mdzip)
+    remote: https://github.com/mdzip-project/mdzip-markitdown.git
+    publishes: ["markitdown-mdzip (PyPI)"]
+    upstreams: ["mdzip-core (PyPI)"]   # no package.json; version lives in src/markitdown_mdzip/_version.py
 
   - name: mdzip-core
     path: ../mdzip-core
