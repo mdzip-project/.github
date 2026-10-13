@@ -109,7 +109,7 @@ repos:
     path: ../mdzip-core-python
     type: core
     visibility: private
-    role: Core Python library — read/write .mdz per spec 1.2.0, stdlib only (local repo, no GitHub remote yet; to publish on PyPI as mdzip-core)
+    role: Core Python library — read/write .mdz per spec 1.2.0, stdlib only (local repo, no GitHub remote yet; to publish on PyPI as mdzip-core, imported as mdzip_core — not `mdzip`, which an unrelated PyPI project uses)
     remote: https://github.com/mdzip-project/mdzip-core-python.git
     publishes: ["mdzip-core (PyPI)"]
     upstreams: []   # no package.json; version lives in src/mdzip/_version.py
