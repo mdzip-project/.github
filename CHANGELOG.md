@@ -5,6 +5,14 @@ Notable changes to the MDZip `.github` coordination hub. Format based on
 
 ## [Unreleased]
 
+### Changed
+
+- **Status board** (`AGENTS.md`): each repo's work state moved from its
+  own `STATUS.md` to one section of `planning/status.md` in the private
+  `planning` repo, which the dashboard now reads. A status change no
+  longer needs a commit in the product repo, and internal notes stay out
+  of public repos. Long per-repo logs moved to `planning/log/<repo>.md`.
+
 ### Added
 
 - **Coordination & governance strategy**

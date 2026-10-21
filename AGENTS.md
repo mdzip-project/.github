@@ -24,22 +24,33 @@ core parity, the detailed gap + phased plan is in
   repo's `UPSTREAM_REQUESTS.md` for blocking dependencies — not a single
   tracking doc in the hub.
 
-## STATUS.md protocol (drives the dashboard)
+## Status board (drives the dashboard)
 
-Every product repository has a `STATUS.md`. The workspace dashboard
-(now its own repo, `../mdzip-dashboard` — see `docs/hub-architecture.md`)
-reads its first two recognized lines:
+Every repo's work state lives in **one file**, `planning/status.md`
+(private `planning` repo, local: `../planning/status.md`), with one
+`## <repo>` section per repo, named exactly as in
+[docs/workspace.md](docs/workspace.md). The workspace dashboard
+(`../mdzip-dashboard` — see `docs/hub-architecture.md`) reads each
+section's lines:
 
 ```
-Status: <state>
-Last:   <one-line description of the most recent action, shown on the dashboard>
+## mdzip-studio
+
+Status:  <state>
+Last:    <one-line description of the most recent action, shown on the dashboard>
 ```
 
-`Last:` is the **last thing you did** (or are doing) in this repo — a
+`Last:` is the **last thing you did** (or are doing) in that repo — a
 running activity line, not a forward to-do.
 
-**You MUST keep `STATUS.md` current as you work.** It is the work board
-the human watches; a stale board is worse than none.
+**You MUST keep your repo's section current as you work.** It is the work
+board the human watches; a stale board is worse than none. Edit only the
+section for the repo you're working in, and change only what you need,
+so agents working in other repos at the same time don't collide.
+
+Repos no longer have a `STATUS.md`; don't create one. The board is
+deliberately outside the product repos: a status change never needs a
+commit there, and nothing internal ends up in a public repo.
 
 ### States
 
@@ -60,16 +71,26 @@ the human watches; a stale board is worse than none.
    did, e.g. `Implemented the export dialog`.
 3. **When blocked** → set `Status: blocked` and put the blocker/question
    in `Last:`, e.g. `Blocked: should viewer migrate to scoped @mdzip/core-js?`
-4. **After commit/merge** → set `idle`, leaving `Last:` as the record of
-   the last completed action, e.g. `Committed the export dialog`.
+4. **After commit/merge/release** → set `idle`, leaving `Last:` as the
+   record of the last completed action, e.g. `Committed the export dialog`.
 
-Keep `Last:` to one line. Longer notes can follow on later lines (the
-dashboard ignores them).
+Keep `Last:` to one line. A few lines of notes can follow it in the
+section (the dashboard ignores them). Longer history — dated work notes,
+decisions, release details — goes in `planning/log/<repo>.md`; point to
+it from the section with a `Log:` line.
+
+The board is the dashboard's live input, so it doesn't need a commit to
+take effect. Don't commit `planning` just to change a status; status
+edits go in with the next `planning` commit.
+
+An agent that can't reach `planning` (e.g. a cloud session with only one
+repo checked out) reports the state and `Last:` line in its final
+summary instead, for the owner or a local session to copy onto the board.
 
 ### Example
 
 A request of *"Implement streaming export in mdzip-studio"* should move
-`mdzip-studio/STATUS.md` through:
+the `## mdzip-studio` section of `planning/status.md` through:
 
 ```
 Status: in-progress      Last: Implementing streaming export
@@ -81,8 +102,8 @@ Status: idle             Last: Committed streaming export
 ## Project conventions
 
 - **Batch commits; the owner reviews before anything goes live.** Do
-  not commit/push after each change. Accumulate work, keep `STATUS.md`
-  current, and present a summary for review; commit and push only when
+  not commit/push after each change. Accumulate work, keep the status
+  board current, and present a summary for review; commit and push only when
   the owner says so. This matters doubly for repos that deploy on push
   to `main` (mdzip.org) — push means production.
 
@@ -117,6 +138,21 @@ Status: idle             Last: Committed streaming export
     for the command itself — `` `mdz` ``).
   - **`.mdz` and `.md`** are always lowercase with the leading dot, and
     always in code font (`` `.mdz` ``), never bare prose text.
+  - **"an `.mdz`", not "a `.mdz`"** — it's read "dot M-D-Z". (Same for
+    "an `.md` file".) mdzip.org's `npm run test:site` fails on "a `.mdz`".
+- **Aligned images in `.md`/`.mdz`: layout lives in the document, not
+  in external CSS.** Use the same HTML the MDZip editor's paste dialog
+  writes, so the image looks the same in Studio, VS Code, the browser
+  previewer, GitHub and any Markdown viewer:
+  - wrapped (text flows around it):
+    `<img src="images/x.webp" alt="..." width="360" height="268" align="right">`
+    (or `align="left"`);
+  - aligned on its own line: `<p align="center"><img src="..." alt="..."></p>`.
+
+  Don't use `style="..."` (the editor's sanitizer strips it). A class is
+  fine for site-only extras on top (mdzip.org's `md-portrait` adds spacing
+  and full width on phones), but never as the only thing producing the
+  layout.
 - **Where docs go.** This hub repo is **public**. Its `docs/` folder is
   for engineering status and reference only. Conceptual design work,
   strategy, market analysis, and scratchpad notes belong in the
@@ -146,4 +182,4 @@ Status: idle             Last: Committed streaming export
 A consumer is **behind** when the version it pins for a first-party
 package (`@mdzip/core-js`, `@mdzip/editor`) is lower than that package's
 current `package.json` version. After bumping an upstream, update each
-downstream pin and set its `STATUS.md` accordingly.
+downstream pin and set its status-board section accordingly.

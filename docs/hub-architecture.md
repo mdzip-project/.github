@@ -2,7 +2,7 @@
 
 How the `.github` repo coordinates the MDZip multi-repo workspace, and
 why it's shaped this way. For the rules agents actually follow day to
-day (orchestration model, `STATUS.md` protocol, project conventions),
+day (orchestration model, status board protocol, project conventions),
 see [AGENTS.md](../AGENTS.md) — that file is the living source of
 truth and takes precedence if anything here drifts out of sync with it.
 
@@ -38,8 +38,7 @@ Current layout (grows as needed — this isn't a prescribed target):
 │   ├── dotnet-workflow.md        # Build/test/release for the .NET repos
 │   └── core-parity.md            # Active initiative detail
 ├── AGENTS.md                     # Hub orchestration rules for agents
-├── CHANGELOG.md
-└── STATUS.md
+└── CHANGELOG.md
 ```
 
 > **CODEOWNERS scope:** if/when a `CODEOWNERS` file is added here,
@@ -135,9 +134,13 @@ before the split).
 -   For couplings that are not npm dependencies (e.g. "viewer requires
     Manifest v1.1"), add an explicit machine-readable entry; this is the
     narrow case the `DEPENDENCIES.json` future enhancement covers.
--   **Status** and the last-action line come from each repo's
-    `STATUS.md` (`Status:` and `Last:`) — the only hand-maintained
-    input, kept current by agents per [AGENTS.md](../AGENTS.md).
+-   **Status** and the last-action line come from the repo's section of
+    the status board, `planning/status.md` in the private `planning`
+    repo (`Status:` and `Last:`) — the only hand-maintained input, kept
+    current by agents per [AGENTS.md](../AGENTS.md). It replaced a
+    `STATUS.md` in every repo (2026-10-19): one file outside the product
+    repos means a status change never needs a product-repo commit (e.g.
+    after a release), and internal notes stay out of public repos.
 
 ### Driving workflow
 
@@ -158,10 +161,6 @@ Repository-specific instructions for AI agents.
 ### `DEPENDENCIES.md`
 Lists upstream repositories/packages, version expectations, and public
 APIs relied upon.
-
-### `STATUS.md`
-The project's live work state, read by the dashboard. Protocol
-(states, when to update) is defined in [AGENTS.md](../AGENTS.md).
 
 ### `UPSTREAM_REQUESTS.md`
 Tracks open upstream GitHub issues, blocking dependencies, and links to
