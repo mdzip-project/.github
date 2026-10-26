@@ -67,8 +67,8 @@ parity work specifically:
 - Image-analysis cases must cover the .NET #6 bug: inline, fenced and indented
   code examples are not images, and real images are still found.
 - Workspace cases check that untouched and lazy content survives a save.
-- Baseline limit cases are spec test `T-018` (`resource-limit-cases.json`, draft on
-  mdzip-spec branch `fixtures/resource-limits`): forged sizes, an extreme ratio and
+- Baseline limit cases are spec test `T-018` (`resource-limit-cases.json`, released
+  in spec v1.2.1): forged sizes, an extreme ratio and
   overlapping entries, against reference limits no default may exceed. Configurable-limit cases compare cores set
   to the same policy, not default numbers.
 - Keep the spec and local regression suites running while shared profiles are
