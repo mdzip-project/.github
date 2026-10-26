@@ -9,8 +9,10 @@ from here, reaching into the product repositories listed in
 that own the code, cross-linked to their counterparts — there is no central
 tracker. For building/testing/releasing the .NET repos (`mdzip-core`,
 `mdzip-cli`), see [docs/dotnet-workflow.md](docs/dotnet-workflow.md). For
-core parity, the detailed gap + phased plan is in
-[docs/core-parity.md](docs/core-parity.md).
+core functionality, start with the required baseline versus optional extensions
+in [docs/core-contract.md](docs/core-contract.md); the capability mapping and
+phased plan are in [docs/core-parity.md](docs/core-parity.md). An API added to
+one core does not automatically become a requirement for all cores.
 
 ## Orchestration model
 

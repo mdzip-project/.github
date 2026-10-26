@@ -1,160 +1,105 @@
-# Core Parity: `mdzip-core` (C#) → `mdzip-core-js` (TS)
+# Core library parity
 
-Method-level map of the gap between the C# core and the TypeScript core,
-and the phased plan to close it.
+This plan measures JavaScript, .NET and Python against the draft
+[core library contract](core-contract.md), not against the union of their APIs.
+The contract defines what is required, what is optional, and how results are
+compared; this document maps each core to it and tracks the remaining work.
 
-- **Status: parity shipped and exposed in the CLI — still true as of
-  2026-09-12.** Current versions: `mdzip-core` (now published as
-  **`MDZip.Core`**) **1.4.0** · `mdzip-core-js` **1.5.0** · `mdzip-cli`
-  **1.3.2**, whose `mdz`/`mdz.Tests` projects already reference
-  `MDZip.Core 1.4.0` (current — not behind). The new commands (`cat`,
-  `assets`, `manifest`, `workspace`, `info`) have shipped since `v1.3.0`.
-  **Re-verified 2026-09-12** (this doc had drifted to citing the older
-  1.3.3/1.3.3/1.3.0 trio as current): every core-js release since 1.3.3
-  was checked against the C# side and found to need no port —
-  - `mdzip-core` **1.4.0** — package rename only (`mdzip-core` →
-    `MDZip.Core`, to align with the npm scoped-package naming); no API
-    change.
-  - `mdzip-core-js` **1.4.0** — added a browser IIFE bundle for
-    non-bundler consumers (e.g. loading via `@require` from a CDN). Pure
-    JS distribution concern; nothing to port.
-  - `mdzip-core-js` **1.5.0** — made `extractImageReferences` a public
-    static method (consolidating a regex previously duplicated across
-    several JS packages), switched `deflateRawBytes()` from
-    `CompressionStream` to `fflate` (a JS/Electron-webview-specific
-    per-call overhead fix), and cached per-entry sizes lazily instead of
-    rescanning on every `open()`. C#'s `MdzArchive.ExtractMarkdownImageReferences`
-    already does the same dual markdown-`![]()`-plus-raw-`<img src>`
-    matching (checked side by side) — it just isn't public, and a check
-    of `mdzip-cli`/`mdzip-win-prev` found no duplicated copy of that logic
-    on the .NET side the way JS had, so there's no equivalent reason to
-    expose it. The compression-backend and caching changes are specific
-    to problems that don't exist in .NET's `System.IO.Compression`.
-- **Merged 2026-07-08.** The parity branch stack was fast-forwarded into
-  `main` (now at `f782bc3`, v1.3.3) and the working branches deleted; the
-  default branch matches what's released. Nothing outstanding.
-- **Core implementation status:** Phases 1-6 implemented and verified in
-  `mdzip-core` on the parity branch stack. Latest verification:
-  `dotnet test mdz-core.slnx -c Release` passed 68/68 tests for both
-  `net8.0` and `net10.0`.
-- Legend: ✅ present · ⚠️ partial · ❌ missing in C#
+**Status, 2026-10-25:** required-baseline acceptance has not yet been verified
+across all three cores. All implement spec 1.2.0, but passing format fixtures
+alone does not prove the public operation contract. Two required gaps are known:
+Python directory enumeration, and built-in ZIP-bomb limits in JS and .NET (R7, below). The older completed JS/.NET effort is in
+the [historical notes](core-parity-history.md).
 
-The original C# public surface was `MdzArchive` (10 static methods): `Create`,
-`CreateFromFiles`, `AddFile`, `RemoveFile`, `Extract`, `List`,
-`ListDetailed`, `ReadManifest`, `ResolveEntryPoint`, `Validate`. The parity
-branch stack expands that surface with read/inspect, validation, manifest
-editing, batch mutation, packaging, asset, orphan-analysis, and workspace APIs.
+This document is engineering reference. Work is tracked in the linked issues in
+each owning repository, and live status is on the private planning board.
+Contract draft 0.1 and the issue scope below await owner review. Neither is a
+mandate to implement optional extensions everywhere.
 
-## Implementation status
+## Source audit and required-baseline mapping
 
-| Phase | `mdzip-core` status | Commit |
+Reviewed sources: core-js 2.1.2 (`src/mdz-core.ts`, Node export), .NET 2.0.1
+(`Core/MdzArchive.cs`, `MdzSpec.cs`, `MdzLinks.cs`, manifest models), Python
+0.1.0 (`src/mdzip_core/__init__.py`, `archive.py`, `writer.py`, `manifest.py`,
+`links.py`, `paths.py`). This is a source review, not verification of released
+artifacts, and no new cross-language behavior tests were run for it.
+
+| Contract operation | JavaScript | .NET | Python | Evidence still required |
+|---|---|---|---|---|
+| R1 open/read | `MdzArchiveCore.open` | Static `MdzArchive` methods that take an `archivePath` (no separate open step) | `open` / `MdzArchive.open` | Matching accept/reject behavior on supported inputs. Stream/byte overloads are not required. |
+| R2 entries, bytes/text, metadata | `listPaths`/`listEntries`, `findEntry`/`hasEntry`, reads, manifest/entry point/mode | `List`/`ListDetailed`, `FindEntry`/`HasEntry`, reads, manifest/entry point/mode | `files`, `find`, `in`, `info`, `read_bytes`/`read_text`, `manifest`, `entry_point`, `mode` | **Gap:** Python's `files` lists files only and its directory list (`_directories`) is private, so directories can't be enumerated. All cores: test directory and special-entry behavior. |
+| R3 link resolution | `resolveLink` | `ResolveLink` / `MdzLinks` | `resolve_link` | Same internal path/fragment and unresolved results. Host-backed resolution is declared separately. |
+| R4 validation/errors | `validate`, `MdzError.code` | `Validate` results, `MdzSpec.ErrorCode` | `validate` diagnostics, `MdzError.code` | Align codes and severity; document open-time rejections. Exception types may differ. |
+| R5 conforming creation | `buildArchive` | `Create` / `CreateFromFiles` / `BuildArchive` | `create` | Required output metadata and caller-supplied manifest fields. |
+| R6 safe modification | `updateFiles` (manifest via `MdzUpdateFilesOptions.manifest`) | `UpdateFiles`, metadata updates | `update(write=, remove=, manifest=, entry_point=)` | Untouched contents, directories, unknown fields and entry point preserved; a failed write leaves the original intact. |
+| R7 safety | Path/ZIP/manifest/link rules | Archive/path/link checks | Open/read checks, `Limits`, host rules | **Gap:** JS and .NET have no entry-count, size or ratio limits ([JS #10](https://github.com/mdzip-project/mdzip-core-js/issues/10), [.NET #9](https://github.com/mdzip-project/mdzip-core/issues/9)). Python enforces them (`ERR_LIMIT_EXCEEDED`). All cores: shared malformed/unsafe input cases. |
+
+Apart from those two gaps, every operation has a mapping. Native
+shapes count: .NET's `MdzSpec.ErrorCode` accessor meets R4 without a new
+exception type, and Python's properties and `update` meet R2 and R6 without
+JS-style wrappers. Edge-case behavior in every core still needs the shared
+fixtures before it can be called verified.
+
+## Optional extensions and runtime differences
+
+| Capability | Current source state | Classification and owning issue |
 |---|---|---|
-| **1** read/inspect | Implemented and tested | `1722d21` |
-| **2** validation helpers | Implemented and tested | `0b80de1` |
-| **3** manifest editing | Implemented and tested | `f403061` |
-| **4** mutation/packaging | Implemented and tested | `f9d5671` |
-| **5** assets/orphan detection | Implemented and tested | `afa37c0` |
-| **6** workspace | Implemented and tested | `7ca50b7` |
+| Image-reference extraction/orphan analysis | JS present (code-example handling fixed in 2.1.2); .NET present with a code-example bug; Python absent | Optional extension. [.NET #6](https://github.com/mdzip-project/mdzip-core/issues/6) fixes a bug in the existing capability and doesn't need a new public extractor. [Python #1](https://github.com/mdzip-project/mdzip-core-python/issues/1) waits for a Python consumer. |
+| Missing-image warnings | JS present; .NET/Python absent | Optional content analysis, not format validation. [.NET #4](https://github.com/mdzip-project/mdzip-core/issues/4) is an enhancement. |
+| MIME/kind/previewability, Base64/data URI, path trees | JS/.NET helpers present; Python limited | Optional helpers, added when a consumer needs them. [Python #2](https://github.com/mdzip-project/mdzip-core-python/issues/2) covers the baseline mapping and the directory gap, not these helpers. |
+| Rich packaging, generated index, file mapping, filters, progress | JS/.NET richer; Python has basic creation and directory filtering | Optional conveniences. R5 is judged by conforming output, not matching packaging options. |
+| Workspace/editor model, lazy asset import/export | JS/.NET present; Python absent | Optional extension. [Python #3](https://github.com/mdzip-project/mdzip-core-python/issues/3) is deferred until a consumer needs it. Existing implementations must keep preserving untouched and lazy content. |
+| Configurable resource limits | Python lets callers set its limits; JS/.NET have no limits at all yet | Optional extension on top of the required built-in limits (R7). The earlier configurable-limits issues (JS #9, .NET #8) are closed, superseded by [JS #10](https://github.com/mdzip-project/mdzip-core-js/issues/10) and [.NET #9](https://github.com/mdzip-project/mdzip-core/issues/9), which add fixed limits only. |
+| Archive input types and filesystem extraction | Bytes, paths, browser objects and file objects differ by runtime | Runtime integration. No universal input requirement; extraction is optional but must be safe where offered. |
+| Exception types, application-provenance option, manifest-splitting helpers | API shapes differ | Runtime/convenience choices. [.NET #7](https://github.com/mdzip-project/mdzip-core/issues/7) audits .NET's baseline mapping; these APIs don't need rewriting to match. |
 
-CLI exposure shipped in `mdzip-cli` `v1.3.0` (see its `CHANGELOG.md`), using the
-NuGet/local-feed workflow in [dotnet-workflow.md](dotnet-workflow.md).
+Reclassifying a capability as optional doesn't justify removing an existing API
+or protection, and a capability that returns wrong results is still a bug.
 
-## API comparison
+## Fixtures and acceptance
 
-The tables below preserve the original gap map from before the parity branch
-stack. See [Implementation status](#implementation-status) for the current
-`mdzip-core` implementation state.
+Acceptance rules are in the contract's
+[acceptance and change control](core-contract.md#acceptance-and-change-control)
+section. [mdzip-spec #9](https://github.com/mdzip-project/mdzip-spec/issues/9)
+builds the shared suite with separate baseline and optional profiles. For
+parity work specifically:
 
-### 1. Read / inspect entries
-| core-js | C# baseline | Original gap |
+- Image-analysis cases must cover the .NET #6 bug: inline, fenced and indented
+  code examples are not images, and real images are still found.
+- Workspace cases check that untouched and lazy content survives a save.
+- Baseline limit cases are spec test `T-018` (`resource-limit-cases.json`, draft on
+  mdzip-spec branch `fixtures/resource-limits`): forged sizes, an extreme ratio and
+  overlapping entries, against reference limits no default may exceed. Configurable-limit cases compare cores set
+  to the same policy, not default numbers.
+- Keep the spec and local regression suites running while shared profiles are
+  built. Existing capabilities can get bug fixes without waiting for the shared suite.
+
+## Implementation order
+
+| Step | Required work | Optional work, kept separate |
 |---|---|---|
-| `open` | (path-based statics) | ✅ different model, ok |
-| `readManifest` | `ReadManifest` | ✅ |
-| `listPaths` / `listEntries` | `List` / `ListDetailed` | ✅ ≈ |
-| `resolveEntryPoint` | `ResolveEntryPoint` | ✅ |
-| `readText` / `readBytes` / `readBase64` / `readDataUri` | `Extract` (to disk only) | ❌ in-memory typed reads |
-| `hasEntry` / `findEntry` | — | ❌ |
-| `resolveMode` (document/project) | — | ❌ |
-| `buildPathTree` | — | ❌ hierarchical tree |
+| 1 | Owner reviews contract R1–R7 and the mapping table above | Identify actual consumers before scheduling extensions |
+| 2 | Define baseline fixtures in [Spec #9](https://github.com/mdzip-project/mdzip-spec/issues/9), including how each core declares its optional profiles; audit [Python #2](https://github.com/mdzip-project/mdzip-core-python/issues/2) and [.NET #7](https://github.com/mdzip-project/mdzip-core/issues/7) against them | Fix the .NET image-analysis bug in [#6](https://github.com/mdzip-project/mdzip-core/issues/6) |
+| 3 | Close required gaps (Python directory enumeration, JS/.NET built-in limits, plus any the fixtures expose); run the baseline suite on all three cores | Missing-image warnings, Python image/workspace APIs and configurable JS/.NET limits stay consumer-driven |
+| 4 | Verify published packages and consumer behavior; record evidence per core | Run the profile for each implemented extension; no release waits on every extension |
 
-### 2. Validate
-| core-js | C# baseline | Original gap |
-|---|---|---|
-| `validate` | `Validate` | ⚠️ simpler |
-| `getValidationStatus` (valid/warning/error) | `ValidationResult` (bool-ish) | ❌ tri-state status |
-| `validateManifest` | (inline in `Validate`) | ⚠️ not exposed |
-| `validateArchivePath` | `PathValidator` | ⚠️ exists, align semantics |
+Each repository keeps its own branch, PR, CI and release gates, and lists its
+dependency on the shared baseline fixtures in its `UPSTREAM_REQUESTS.md`. There
+is no central tracking issue or shared release train.
 
-### 3. Mutate files
-| core-js | C# baseline | Original gap |
-|---|---|---|
-| `addFile` | `AddFile` | ✅ |
-| `removeFile` | `RemoveFile` | ✅ |
-| `removeFiles` (batch) | — | ❌ |
-| `updateFiles` (atomic multi add+remove) | — | ❌ atomic batch |
+## Maintenance
 
-### 4. Manifest editing
-| core-js | C# baseline | Original gap |
-|---|---|---|
-| `createManifest` / `buildManifestFromOptions` | (internal to `Create`) | ⚠️ not standalone |
-| `updateManifest` | — | ❌ read-only today |
-| `splitManifestMetadata` (editable vs reserved) | — | ❌ |
-
-### 5. Packaging
-| core-js | C# baseline | Original gap |
-|---|---|---|
-| `Create` / `CreateFromFiles` | `Create` / `CreateFromFiles` | ✅ basic |
-| `buildArchive` (options, progress, warnings, file-map, modes) | — | ❌ rich packager |
-| `buildGeneratedIndex` | — | ❌ auto index |
-| `makeUniqueArchivePath` | — | ❌ |
-
-### 6. Assets
-| core-js | C# baseline | Original gap |
-|---|---|---|
-| `classifyAssetKind` (image/audio/video/font/data/other) | — | ❌ |
-| `inferMimeType` / `IMAGE_MIME_TYPES` | — | ❌ |
-| `isPreviewableAsset` | — | ❌ |
-| `findOrphanedAssets` (missing / unreferenced) | — | ❌ high value |
-
-### 7. Workspace (editor model)
-| core-js | C# baseline | Original gap |
-|---|---|---|
-| `openWorkspace` / `buildWorkspace` | — | ❌ whole subsystem |
-| `createWorkspaceAssetFromFile` / `exportWorkspaceAsset` | — | ❌ |
-
-> Internal helpers in core-js (`basename`, `dirname`, `normalizePath`,
-> `sanitise*`, `globMatch`, `sortArchivePaths`, …) are implementation details;
-> C# can mirror behaviour without exposing equivalents.
-
-## Phased plan (core first, then CLI)
-
-Each phase = implement in C# + xUnit tests, on a branch. CLI exposure follows
-once core is packed/released (cli consumes core via NuGet — see
-[workspace.md](workspace.md) Review note #5).
-
-| Phase | Capability | New/!changed CLI surface |
-|---|---|---|
-| **1** | Typed entry reads, `hasEntry`/`findEntry`, `resolveMode`, `buildPathTree` | richer `mdz inspect` (tree, mode); `mdz cat <entry>` |
-| **2** | Tri-state validation (`getValidationStatus`, `validateManifest`) | `mdz validate` shows warning vs error |
-| **3** | Manifest editing (`updateManifest`, split editable/reserved) | `mdz manifest get/set` |
-| **4** | Atomic mutation (`updateFiles`, `removeFiles`) + rich `buildArchive` | richer `mdz create`/`mdz edit` |
-| **5** | Asset model (`classifyAssetKind`, `inferMimeType`, `findOrphanedAssets`) | `mdz doctor` / `mdz assets --orphans` |
-| **6** | Workspace (`openWorkspace`, `buildWorkspace`, asset export) | `mdz workspace inspect/export` |
-
-`mdz info` (app + core + .NET runtime + OS) is independent and can land
-anytime — fold it into Phase 1's CLI work.
-
-## Versioning
-
-- `1.3.0` — parity complete (folding in the net10 multi-target work), released
-  together with `mdzip-cli` `1.3.0`, lining up with core-js 1.3.x. Done.
-- `1.3.3` — raw-`<img>` orphan-detection fix, released together with
-  `mdzip-core-js` 1.3.3. Done; `mdzip-cli` consumes it without needing its own
-  version bump.
-- `1.4.0` — renamed the published package from `mdzip-core` to `MDZip.Core`
-  (no API change). `mdzip-cli` bumped its `PackageReference` to `1.4.0`.
-  core-js's own 1.4.0 (browser IIFE bundle) and 1.5.0 (public
-  `extractImageReferences`, `fflate`-based compression, entry-size caching)
-  were checked and found to be JS-runtime-specific or already matched in
-  C# — no corresponding `mdzip-core` release needed. See the Status note
-  above for the detail; re-verified 2026-09-12.
+- Check baseline fixes across all three cores. Check optional fixes only
+  against the other cores that implement that extension.
+- An API added to one core doesn't widen the contract. Making something required
+  takes a reviewed contract change, updated fixtures and a compatibility plan.
+- Keep the mapping table current: native API names, supported optional scope,
+  fixture version and verified released versions. Don't claim completion from a
+  source review alone.
+- Package versions stay independent. After a release, check the registry
+  artifact and update downstream pins and the status board; consumer releases
+  are separate.
+- Release guides are untracked local files in each repo: `RELEASE.md` in
+  `mdzip-core`, `How to Release.md` and `How to Publish to NPM.md` in
+  `mdzip-core-js`; `mdzip-core-python` has none yet. .NET build details are in
+  [dotnet-workflow.md](dotnet-workflow.md).
