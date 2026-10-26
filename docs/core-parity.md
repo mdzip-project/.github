@@ -42,6 +42,30 @@ exception type, and Python's properties and `update` meet R2 and R6 without
 JS-style wrappers. Edge-case behavior in every core still needs the shared
 fixtures before it can be called verified.
 
+## Rust core (new)
+
+`mdzip-core-rust` (crate `mdzip-core`, 0.1.0 on crates.io) was added and
+released on 2026-10-26, prompted by a Rust editor planning `.mdz` support. It was written
+against this contract from the start, so it has no legacy API to map:
+
+| Contract operation | Rust |
+|---|---|
+| R1 open/read | `MdzArchive::open` (bytes), `open_path`, `open_with_limits` |
+| R2 entries, bytes/text, metadata | `files`, `directories`, `special_files`, `find`, `find_directory`, `entry_info`, `read_bytes`/`read_text`, `manifest`, `entry_point`, `mode` |
+| R3 link resolution | `MdzArchive::resolve_link`, `resolve_link` with a `LinkHost` |
+| R4 validation/errors | `validate()` diagnostics, `MdzError::code` |
+| R5 conforming creation | `create`, `create_from_directory` |
+| R6 safe modification | `MdzArchive::update` with `Update` |
+| R7 safety | Path/entry-set/overlap/symlink rules on open; built-in `Limits` (configurable) |
+
+It passes the spec v1.2.1 fixtures (T-001–T-018 except rendering-only T-016,
+and P-001–P-008) on Rust 1.85 and stable, and archives it writes open in the
+Python and JS cores (checked by hand, 2026-10-26). Optional extensions:
+configurable limits, host link resolution, packaging filters. Like the others,
+it still needs the shared baseline suite from
+[Spec #9](https://github.com/mdzip-project/mdzip-spec/issues/9) before it can be
+called verified.
+
 ## Optional extensions and runtime differences
 
 | Capability | Current source state | Classification and owning issue |

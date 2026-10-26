@@ -24,7 +24,8 @@ lower than the producing repo's current `package.json` `version`.
 | `@mdzip/core-js` | `mdzip-core-js` | 1.5.0 |
 | `@mdzip/editor` | `mdzip-editor` | 1.5.0 |
 | `@mdzip/editor-ng` | `mdzip-editor` | 1.5.0 |
-| `mdzip-core` (PyPI) | `mdzip-core-python` | 0.1.0 (unreleased) |
+| `mdzip-core` (PyPI) | `mdzip-core-python` | 0.1.0 |
+| `mdzip-core` (crates.io) | `mdzip-core-rust` | 0.1.0 |
 | `markitdown-mdzip` (PyPI) | `mdzip-markitdown` | 0.1.0 (unreleased) |
 
 ## Repositories
@@ -108,11 +109,20 @@ repos:
   - name: mdzip-core-python
     path: ../mdzip-core-python
     type: core
-    visibility: private
-    role: Core Python library — read/write .mdz per spec 1.2.0, stdlib only (local repo, no GitHub remote yet; to publish on PyPI as mdzip-core, imported as mdzip_core — not `mdzip`, which an unrelated PyPI project uses)
+    visibility: public
+    role: Core Python library — read/write .mdz per spec 1.2.0, stdlib only (on PyPI as mdzip-core, imported as mdzip_core — not `mdzip`, which an unrelated PyPI project uses)
     remote: https://github.com/mdzip-project/mdzip-core-python.git
     publishes: ["mdzip-core (PyPI)"]
-    upstreams: []   # no package.json; version lives in src/mdzip/_version.py
+    upstreams: []   # no package.json; version lives in src/mdzip_core/_version.py
+
+  - name: mdzip-core-rust
+    path: ../mdzip-core-rust
+    type: core
+    visibility: public
+    role: Core Rust library — read/write .mdz per spec 1.2.0 (crate mdzip-core on crates.io, imported as mdzip_core); tested against the spec's shared fixtures
+    remote: https://github.com/mdzip-project/mdzip-core-rust.git
+    publishes: ["mdzip-core (crates.io)"]
+    upstreams: []   # no package.json; version lives in Cargo.toml
 
   - name: mdzip-markitdown
     path: ../mdzip-markitdown

@@ -33,7 +33,7 @@ Dashed badges are in progress or coming soon. For what works with what, with sta
 | Write and manage documents in a desktop app | [MDZip Studio](https://mdzip.org/studio.html) |
 | Work with `.mdz` files in VS Code | [VS Code extension](https://marketplace.visualstudio.com/items?itemName=mdzip-project.mdzip-vscode) |
 | Create and extract archives from the command line | [`mdz` CLI](https://github.com/mdzip-project/mdzip-cli) |
-| Add MDZip support to your software | [JavaScript / TypeScript](https://github.com/mdzip-project/mdzip-core-js) or [C# / .NET](https://github.com/mdzip-project/mdzip-core) core libraries |
+| Add MDZip support to your software | [JavaScript / TypeScript](https://github.com/mdzip-project/mdzip-core-js), [C# / .NET](https://github.com/mdzip-project/mdzip-core), [Rust](https://github.com/mdzip-project/mdzip-core-rust) or [Python](https://github.com/mdzip-project/mdzip-core-python) core libraries |
 | Embed a Markdown and MDZip editor | [Editor packages](https://github.com/mdzip-project/mdzip-editor) for JavaScript, Angular, React, and Vue |
 | Implement or understand the file format | [Format specification and examples](https://github.com/mdzip-project/mdzip-spec) |
 
@@ -53,6 +53,8 @@ Explore the source, find a release, or open the published package. Each reposito
 |---|---|---|---|
 | [mdzip-core](https://github.com/mdzip-project/mdzip-core) | C# / .NET library for working with `.mdz` archives (`MDZip.Core`). | [![Latest release for mdzip-core](https://img.shields.io/github/v/release/mdzip-project/mdzip-core?logo=github&logoColor=white&label=release)](https://github.com/mdzip-project/mdzip-core/releases/latest) | [![NuGet package version for MDZip.Core](https://img.shields.io/nuget/v/MDZip.Core?logo=nuget)](https://www.nuget.org/packages/MDZip.Core) |
 | [mdzip-core-js](https://github.com/mdzip-project/mdzip-core-js) | JavaScript `.mdz` core library (`@mdzip/core-js`, TypeScript, browser + Node.js). | [![Latest release for mdzip-core-js](https://img.shields.io/github/v/release/mdzip-project/mdzip-core-js?logo=github&logoColor=white&label=release)](https://github.com/mdzip-project/mdzip-core-js/releases/latest) | [![NPM package version for @mdzip/core-js](https://img.shields.io/npm/v/@mdzip/core-js)](https://www.npmjs.com/package/@mdzip/core-js) |
+| [mdzip-core-rust](https://github.com/mdzip-project/mdzip-core-rust) | Rust `.mdz` core library (`mdzip-core` crate, Rust 1.85+). | [![Latest release for mdzip-core-rust](https://img.shields.io/github/v/release/mdzip-project/mdzip-core-rust?logo=github&logoColor=white&label=release)](https://github.com/mdzip-project/mdzip-core-rust/releases/latest) | [![crates.io version for mdzip-core](https://img.shields.io/crates/v/mdzip-core?logo=rust)](https://crates.io/crates/mdzip-core) |
+| [mdzip-core-python](https://github.com/mdzip-project/mdzip-core-python) | Python `.mdz` core library (`mdzip-core`, standard library only, Python 3.10+). | [![Latest release for mdzip-core-python](https://img.shields.io/github/v/release/mdzip-project/mdzip-core-python?logo=github&logoColor=white&label=release)](https://github.com/mdzip-project/mdzip-core-python/releases/latest) | [![PyPI version for mdzip-core](https://img.shields.io/pypi/v/mdzip-core?logo=pypi&logoColor=white)](https://pypi.org/project/mdzip-core/) |
 
 ### Editor packages
 
