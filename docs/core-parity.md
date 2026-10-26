@@ -5,10 +5,12 @@ This plan measures JavaScript, .NET and Python against the draft
 The contract defines what is required, what is optional, and how results are
 compared; this document maps each core to it and tracks the remaining work.
 
-**Status, 2026-10-25:** required-baseline acceptance has not yet been verified
+**Status, 2026-10-26:** required-baseline acceptance has not yet been verified
 across all three cores. All implement spec 1.2.0, but passing format fixtures
-alone does not prove the public operation contract. Two required gaps are known:
-Python directory enumeration, and built-in ZIP-bomb limits in JS and .NET (R7, below). The older completed JS/.NET effort is in
+alone does not prove the public operation contract. The two known required gaps,
+Python directory enumeration and built-in ZIP-bomb limits in JS and .NET (below),
+are fixed on each core's unreleased `feat/spec-1.2.1` branch, and all three pass
+T-018 there. The older completed JS/.NET effort is in
 the [historical notes](core-parity-history.md).
 
 This document is engineering reference. Work is tracked in the linked issues in
@@ -27,12 +29,12 @@ artifacts, and no new cross-language behavior tests were run for it.
 | Contract operation | JavaScript | .NET | Python | Evidence still required |
 |---|---|---|---|---|
 | R1 open/read | `MdzArchiveCore.open` | Static `MdzArchive` methods that take an `archivePath` (no separate open step) | `open` / `MdzArchive.open` | Matching accept/reject behavior on supported inputs. Stream/byte overloads are not required. |
-| R2 entries, bytes/text, metadata | `listPaths`/`listEntries`, `findEntry`/`hasEntry`, reads, manifest/entry point/mode | `List`/`ListDetailed`, `FindEntry`/`HasEntry`, reads, manifest/entry point/mode | `files`, `find`, `in`, `info`, `read_bytes`/`read_text`, `manifest`, `entry_point`, `mode` | **Gap:** Python's `files` lists files only and its directory list (`_directories`) is private, so directories can't be enumerated. All cores: test directory and special-entry behavior. |
+| R2 entries, bytes/text, metadata | `listPaths`/`listEntries`, `findEntry`/`hasEntry`, reads, manifest/entry point/mode | `List`/`ListDetailed`, `FindEntry`/`HasEntry`, reads, manifest/entry point/mode | `files`, `find`, `in`, `info`, `read_bytes`/`read_text`, `manifest`, `entry_point`, `mode` | **Gap, fixed unreleased:** Python had no public directory listing and `update` dropped directory entries; now `directories`, `find_directory`, and `update` keeps them ([Python #2](https://github.com/mdzip-project/mdzip-core-python/issues/2)). All cores: test directory and special-entry behavior. |
 | R3 link resolution | `resolveLink` | `ResolveLink` / `MdzLinks` | `resolve_link` | Same internal path/fragment and unresolved results. Host-backed resolution is declared separately. |
 | R4 validation/errors | `validate`, `MdzError.code` | `Validate` results, `MdzSpec.ErrorCode` | `validate` diagnostics, `MdzError.code` | Align codes and severity; document open-time rejections. Exception types may differ. |
 | R5 conforming creation | `buildArchive` | `Create` / `CreateFromFiles` / `BuildArchive` | `create` | Required output metadata and caller-supplied manifest fields. |
 | R6 safe modification | `updateFiles` (manifest via `MdzUpdateFilesOptions.manifest`) | `UpdateFiles`, metadata updates | `update(write=, remove=, manifest=, entry_point=)` | Untouched contents, directories, unknown fields and entry point preserved; a failed write leaves the original intact. |
-| R7 safety | Path/ZIP/manifest/link rules | Archive/path/link checks | Open/read checks, `Limits`, host rules | **Gap:** JS and .NET have no entry-count, size or ratio limits ([JS #10](https://github.com/mdzip-project/mdzip-core-js/issues/10), [.NET #9](https://github.com/mdzip-project/mdzip-core/issues/9)). Python enforces them (`ERR_LIMIT_EXCEEDED`). All cores: shared malformed/unsafe input cases. |
+| R7 safety | Path/ZIP/manifest/link rules | Archive/path/link checks | Open/read checks, `Limits`, host rules | **Gap, fixed unreleased:** JS and .NET had no entry-count, size or ratio limits and didn't verify reads ([JS #10](https://github.com/mdzip-project/mdzip-core-js/issues/10), [.NET #9](https://github.com/mdzip-project/mdzip-core/issues/9), [.NET #10](https://github.com/mdzip-project/mdzip-core/issues/10)); now built-in limits and checked reads. Python enforces them and now wraps corrupt reads ([Python #4](https://github.com/mdzip-project/mdzip-core-python/issues/4)). All cores: shared malformed/unsafe input cases. |
 
 Apart from those two gaps, every operation has a mapping. Native
 shapes count: .NET's `MdzSpec.ErrorCode` accessor meets R4 without a new
