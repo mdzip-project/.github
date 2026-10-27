@@ -142,6 +142,19 @@ Status: idle             Last: Committed streaming export
     always in code font (`` `.mdz` ``), never bare prose text.
   - **"an `.mdz`", not "a `.mdz`"** — it's read "dot M-D-Z". (Same for
     "an `.md` file".) mdzip.org's `npm run test:site` fails on "a `.mdz`".
+- **Pictures must earn their place.** Every image on a site page must do
+  at least one of three things: **explain** something (a diagram,
+  screenshot, before/after), be **recognizable** enough to draw the eye
+  (a language, OS, or app logo next to its section), or be **funny**
+  (e.g. the owner as the Architect from *The Matrix*). No decorative
+  stock photos that have nothing to do with the product.
+  - When it fits naturally, reference movies, especially sci-fi (HAL
+    on the browser-warning page, the *Men in Black* galaxy-on-a-collar
+    for "a whole document in one file"). Don't force it: at most about
+    one reference per page, and plain how-to pictures are fine.
+  - Use original drawings in the spirit of the film. No film stills,
+    traced characters, or studio logos. Keep caption quotes short or
+    paraphrased.
 - **Aligned images in `.md`/`.mdz`: layout lives in the document, not
   in external CSS.** Use the same HTML the MDZip editor's paste dialog
   writes, so the image looks the same in Studio, VS Code, the browser
