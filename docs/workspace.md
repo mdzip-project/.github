@@ -26,6 +26,7 @@ lower than the producing repo's current `package.json` `version`.
 | `@mdzip/editor-ng` | `mdzip-editor` | 1.5.0 |
 | `mdzip-core` (PyPI) | `mdzip-core-python` | 0.1.0 |
 | `mdzip-core` (crates.io) | `mdzip-core-rust` | 0.1.0 |
+| `mdzip-core-lua` (LuaRocks) | `mdzip-core-lua` | 0.1.0 (unreleased) |
 | `markitdown-mdzip` (PyPI) | `mdzip-markitdown` | 0.1.0 (unreleased) |
 
 ## Repositories
@@ -123,6 +124,24 @@ repos:
     remote: https://github.com/mdzip-project/mdzip-core-rust.git
     publishes: ["mdzip-core (crates.io)"]
     upstreams: []   # no package.json; version lives in Cargo.toml
+
+  - name: mdzip-core-lua
+    path: ../mdzip-core-lua
+    type: core
+    visibility: private
+    role: Core Lua library — read/write/validate .mdz per spec 1.2, pure Lua 5.3+ with no dependencies (to publish on LuaRocks as mdzip-core-lua, imported as `mdzip`); tested against the spec's shared fixtures
+    remote: https://github.com/mdzip-project/mdzip-core-lua.git
+    publishes: ["mdzip-core-lua (LuaRocks)"]
+    upstreams: []   # no package.json; version lives in src/mdzip/version.lua
+
+  - name: mdzip-pandoc
+    path: ../mdzip-pandoc
+    type: apps
+    visibility: private
+    role: Pandoc custom reader and writer for .mdz (mdz.lua), built on mdzip-core-lua (new repo, no commits yet)
+    remote: https://github.com/mdzip-project/mdzip-pandoc.git
+    publishes: []
+    upstreams: ["mdzip-core-lua (LuaRocks)"]
 
   - name: mdzip-markitdown
     path: ../mdzip-markitdown

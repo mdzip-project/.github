@@ -108,6 +108,13 @@ Status: idle             Last: Committed streaming export
   board current, and present a summary for review; commit and push only when
   the owner says so. This matters doubly for repos that deploy on push
   to `main` (mdzip.org) — push means production.
+  - **Only an explicit "commit" or "push" approves a commit or push.**
+    Requests like "let's publish X", "release X", "ship it" or "let's
+    test it" are **not** approval to commit, tag or push. For those,
+    prepare everything (version bumps, changelog, build, tests), show
+    the owner the pending diff and the exact commands, and stop. Then
+    commit, tag and push only after the owner says to. Approval covers
+    the one commit or push it names, not later ones.
 
 - **Visual theme: black/white/greyscale, color for emphasis only.** The
   project is moving to a greyscale theme across all properties
@@ -140,6 +147,15 @@ Status: idle             Last: Committed streaming export
     for the command itself — `` `mdz` ``).
   - **`.mdz` and `.md`** are always lowercase with the leading dot, and
     always in code font (`` `.mdz` ``), never bare prose text.
+  - **Name the format on first mention in copy for outsiders** (listings,
+    posts, READMEs, descriptions): "MDZip (`.mdz`)", then plain `.mdz`
+    after that. The name is what people search for and remember; the
+    bare extension says nothing. Each separately read piece (a short and
+    a long description, say) names it once. Don't repeat the pair.
+  - **No "honestly", "to be honest", "frankly" or "genuinely".** They
+    imply the rest of the copy isn't honest. Just say the thing: "Some
+    machinery still shows, though", not "Honestly, some machinery still
+    shows".
   - **"an `.mdz`", not "a `.mdz`"** — it's read "dot M-D-Z". (Same for
     "an `.md` file".) mdzip.org's `npm run test:site` fails on "a `.mdz`".
 - **Pictures must earn their place.** Every image on a site page must do
