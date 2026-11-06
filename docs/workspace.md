@@ -26,7 +26,7 @@ lower than the producing repo's current `package.json` `version`.
 | `@mdzip/editor-ng` | `mdzip-editor` | 1.5.0 |
 | `mdzip-core` (PyPI) | `mdzip-core-python` | 0.1.0 |
 | `mdzip-core` (crates.io) | `mdzip-core-rust` | 0.1.0 |
-| `mdzip-core-lua` (LuaRocks) | `mdzip-core-lua` | 0.1.0 (unreleased) |
+| `mdzip-core-lua` (LuaRocks) | `mdzip-core-lua` | 0.1.0 |
 | `markitdown-mdzip` (PyPI) | `mdzip-markitdown` | 0.1.0 (unreleased) |
 
 ## Repositories
@@ -128,8 +128,8 @@ repos:
   - name: mdzip-core-lua
     path: ../mdzip-core-lua
     type: core
-    visibility: private
-    role: Core Lua library — read/write/validate .mdz per spec 1.2, pure Lua 5.3+ with no dependencies (to publish on LuaRocks as mdzip-core-lua, imported as `mdzip`); tested against the spec's shared fixtures
+    visibility: public
+    role: Core Lua library — read/write/validate .mdz per spec 1.2, pure Lua 5.3+ with no dependencies (on LuaRocks as mdzip-core-lua, imported as `mdzip`); tested against the spec's shared fixtures
     remote: https://github.com/mdzip-project/mdzip-core-lua.git
     publishes: ["mdzip-core-lua (LuaRocks)"]
     upstreams: []   # no package.json; version lives in src/mdzip/version.lua
