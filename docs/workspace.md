@@ -134,6 +134,15 @@ repos:
     publishes: ["mdzip-core-lua (LuaRocks)"]
     upstreams: []   # no package.json; version lives in src/mdzip/version.lua
 
+  - name: mdzip-core-swift
+    path: ../mdzip-core-swift
+    type: core
+    visibility: public
+    role: Core Swift library — read/write/validate .mdz per spec 1.2 (Swift package `MDZip`); tested against the spec's shared fixtures, CI on Linux and macOS
+    remote: https://github.com/mdzip-project/mdzip-core-swift.git
+    publishes: []   # not released yet (Swift Package Manager installs from git tags)
+    upstreams: []   # no package.json; versions come from git tags
+
   - name: mdzip-pandoc
     path: ../mdzip-pandoc
     type: apps
@@ -223,6 +232,15 @@ repos:
     role: Workspace status dashboard (this page) — split out of .github/tools/dashboard/ into its own TS server + Vite SPA (exploratory scaffold, no GitHub remote yet)
     remote: https://github.com/mdzip-project/mdzip-dashboard.git
     publishes: []
+    upstreams: []
+
+  - name: homebrew-mdzip
+    path: ../homebrew-mdzip
+    type: apps
+    visibility: public
+    role: Homebrew tap (`brew tap mdzip-project/mdzip`) — the MDZip Studio cask, updated by mdzip-studio's bump-tap.yml with the HOMEBREW_TAP_TOKEN secret
+    remote: https://github.com/mdzip-project/homebrew-mdzip.git
+    publishes: ["mdzip-studio (Homebrew cask)"]
     upstreams: []
 ```
 
