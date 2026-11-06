@@ -5,9 +5,9 @@ Instructions for AI agents working across the MDZip workspace. This repo
 from here, reaching into the product repositories listed in
 [docs/workspace.md](docs/workspace.md).
 
-**Start here:** cross-repo work is tracked as issues in the repositories
-that own the code, cross-linked to their counterparts — there is no central
-tracker. For building/testing/releasing the .NET repos (`mdzip-core`,
+**Start here:** work to do is tracked as issues in the repositories that
+own the code, all collected on one org Project (see
+[Work tracking](#work-tracking)). For building/testing/releasing the .NET repos (`mdzip-core`,
 `mdzip-cli`), see [docs/dotnet-workflow.md](docs/dotnet-workflow.md). For
 core functionality, start with the required baseline versus optional extensions
 in [docs/core-contract.md](docs/core-contract.md); the capability mapping and
@@ -25,6 +25,30 @@ one core does not automatically become a requirement for all cores.
   each other (e.g. a Studio issue and its VS Code counterpart), plus each
   repo's `UPSTREAM_REQUESTS.md` for blocking dependencies — not a single
   tracking doc in the hub.
+
+## Work tracking
+
+Anything to do later is a **GitHub issue**, and every issue goes on the
+org Project **"MDZip"** (`github.com/orgs/mdzip-project/projects/1`).
+Don't keep to-do lists in files: no `owner-todo.md`, `TODO.md` or
+to-do notes in a repo.
+
+- **Where it goes:** the repo the work is about. Workspace-wide
+  engineering goes in `.github`. Ideas, strategy, promo and anything
+  private go in the private `planning` repo.
+- **Add it to the Project** when you file it, and set Value (1–3),
+  Effort (S/M/L) and Who (Owner/Agent). Set the issue type on the issue
+  itself (Task, Bug, Feature, Idea, Release, Promo).
+- **Owner tasks** (decide, test, release, account admin) get Who = Owner
+  and Status = Waiting on owner.
+- **Before starting** an issue, set its Status to In progress; on
+  finishing, close it or set Waiting on owner.
+- **Uncommitted work waiting for review isn't an issue.** The status
+  board below already tracks it as `awaiting-test` / `ready-to-commit`.
+- **Public repos have public issues.** Put sensitive detail in a
+  `planning` issue that links *to* the public one, never the reverse.
+- An agent that can't reach GitHub lists the issues it would have filed
+  in its final summary.
 
 ## Status board (drives the dashboard)
 
@@ -203,8 +227,9 @@ Status: idle             Last: Committed streaming export
 - **The ecosystem list has one source.** What exists (products, layers,
   status, links, badges) is edited only in the mdzip.org repo's
   `templates/ecosystem.json`. The site build regenerates the Works With
-  page, the ecosystem table and pills in `page_src/works-with.mdz`, the
-  news footer and `llms.txt` from it, and publishes
+  page (its tables and the ecosystem hub picture at the top), the
+  ecosystem table and pills in `page_src/works-with.mdz`, the news footer
+  and `llms.txt` from it, and publishes
   `https://mdzip.org/ecosystem.json` plus badges at
   `https://mdzip.org/assets/pills/<id>.svg`. This repo's
   `profile/README.md` table is generated from that JSON by
