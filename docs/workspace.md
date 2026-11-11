@@ -27,6 +27,7 @@ lower than the producing repo's current `package.json` `version`.
 | `mdzip-core` (PyPI) | `mdzip-core-python` | 0.1.0 |
 | `mdzip-core` (crates.io) | `mdzip-core-rust` | 0.1.0 |
 | `mdzip-core-lua` (LuaRocks) | `mdzip-core-lua` | 0.1.0 |
+| `org.mdzip:mdzip-core` (Maven Central) | `mdzip-core-kotlin` | 0.1.0 |
 | `markitdown-mdzip` (PyPI) | `mdzip-markitdown` | 0.1.0 (unreleased) |
 
 ## Repositories
@@ -138,16 +139,25 @@ repos:
     path: ../mdzip-core-swift
     type: core
     visibility: public
-    role: Core Swift library — read/write/validate .mdz per spec 1.2 (Swift package `MDZip`); tested against the spec's shared fixtures, CI on Linux and macOS
+    role: Core Swift library — read/write/validate .mdz per spec 1.2 (Swift package `MDZip`, iOS 15+, macOS 12+, Linux); tested against the spec's shared fixtures, CI on Linux, macOS and the iOS Simulator
     remote: https://github.com/mdzip-project/mdzip-core-swift.git
-    publishes: []   # not released yet (Swift Package Manager installs from git tags)
+    publishes: []   # released 0.1.0 (tag v0.1.0); Swift Package Manager installs from git tags, no registry
     upstreams: []   # no package.json; versions come from git tags
+
+  - name: mdzip-core-kotlin
+    path: ../mdzip-core-kotlin
+    type: core
+    visibility: public
+    role: Core Kotlin/JVM library for Android and JVM apps — read/write/validate .mdz per spec 1.2.1 (Maven org.mdzip:mdzip-core, package org.mdzip.core; Java 8 bytecode, Android API 21+, no dependencies beyond kotlin-stdlib); tested against the spec's shared fixtures and on Android emulators (API 21-35) in CI
+    remote: https://github.com/mdzip-project/mdzip-core-kotlin.git
+    publishes: ["org.mdzip:mdzip-core (Maven Central)"]
+    upstreams: []   # no package.json; version lives in gradle.properties
 
   - name: mdzip-pandoc
     path: ../mdzip-pandoc
     type: apps
     visibility: private
-    role: Pandoc custom reader and writer for .mdz (mdz.lua), built on mdzip-core-lua (new repo, no commits yet)
+    role: Pandoc custom reader and writer for .mdz (mdz.lua), built on mdzip-core-lua
     remote: https://github.com/mdzip-project/mdzip-pandoc.git
     publishes: []
     upstreams: ["mdzip-core-lua (LuaRocks)"]
