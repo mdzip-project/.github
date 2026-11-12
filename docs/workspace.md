@@ -1,7 +1,7 @@
 # Workspace Manifest
 
 The list of MDZip repositories the hub can reach, their local paths, and
-their roles. The dashboard (`tools/dashboard/`) reads the YAML block
+their roles. The dashboard (`../mdzip-dashboard`) reads the YAML block
 below to know which repos to scan; everything else (git state, dependency
 versions) it reads live from each repo.
 
