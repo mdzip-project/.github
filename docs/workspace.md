@@ -156,10 +156,10 @@ repos:
   - name: mdzip-pandoc
     path: ../mdzip-pandoc
     type: apps
-    visibility: private
-    role: Pandoc custom reader and writer for .mdz (mdz.lua), built on mdzip-core-lua
+    visibility: public
+    role: Pandoc custom reader and writer for .mdz (mdz.lua), built on mdzip-core-lua; also a GitHub Action (`mdzip-project/mdzip-pandoc@v0`) that converts one file to or from .mdz
     remote: https://github.com/mdzip-project/mdzip-pandoc.git
-    publishes: []
+    publishes: ["mdz.lua (GitHub release)", "GitHub Action (moving v0 tag)"]
     upstreams: ["mdzip-core-lua (LuaRocks)"]
 
   - name: mdzip-markitdown
@@ -243,6 +243,15 @@ repos:
     remote: https://github.com/mdzip-project/mdzip-dashboard.git
     publishes: []
     upstreams: []
+
+  - name: setup-mdz
+    path: ../setup-mdz
+    type: apps
+    visibility: public
+    role: GitHub Action ("MDZip" on the Marketplace) that installs a pinned `mdz` CLI on Linux, macOS and Windows runners and checks its SHA-256
+    remote: https://github.com/mdzip-project/setup-mdz.git
+    publishes: ["GitHub Action (moving v1 tag)"]
+    upstreams: ["mdzip-cli (GitHub releases)"]
 
   - name: homebrew-mdzip
     path: ../homebrew-mdzip
