@@ -253,6 +253,15 @@ repos:
     publishes: ["GitHub Action (moving v1 tag)"]
     upstreams: ["mdzip-cli (GitHub releases)"]
 
+  - name: mdzip-pages-example
+    path: ../mdzip-pages-example
+    type: apps
+    visibility: public
+    role: Template repo for a website made of .mdz pages, built with setup-mdz + mdzip-pandoc and published on GitHub Pages; no site code (pages, a Pandoc template, a style sheet)
+    remote: https://github.com/mdzip-project/mdzip-pages-example.git
+    publishes: ["GitHub Pages site"]
+    upstreams: ["setup-mdz (v1)", "mdzip-pandoc (v0)"]
+
   - name: homebrew-mdzip
     path: ../homebrew-mdzip
     type: apps
