@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Rewrite the "ecosystem at a glance" table in profile/README.md (the GitHub
-// org profile) from the ecosystem registry mdzip.org publishes. The registry
+// org profile), and the download badges in its Release status table, from the
+// ecosystem registry mdzip.org publishes. The registry
 // is edited in the mdzip.org repo (templates/ecosystem.json); this README only
 // shows it, with the badges served by mdzip.org.
 //
@@ -44,6 +45,30 @@ function pill(product) {
   return product.url ? `[${image}](${product.url})` : image;
 }
 
+// The Release status table further down is hand-written, but each row in
+// DOWNLOAD_ROWS has its last cell generated: one "Download for <platform>"
+// badge per platform the product lists. Same format as mdzip.org's Project
+// page (downloadBadgesMarkdown in its scripts/lib/ecosystem.mjs).
+const DOWNLOAD_ROWS = { 'mdzip-studio': 'studio' };
+const PLATFORMS = { windows: 'Windows', macos: 'macOS', linux: 'Linux' };
+
+function downloadBadges(product) {
+  return (product.platforms ?? []).map((p) =>
+    `[![Download for ${PLATFORMS[p]}](https://img.shields.io/badge/Download-${PLATFORMS[p]}-blue?logo=${p}&logoColor=white)](${product.url}#${p})`).join(' ');
+}
+
+function withDownloadBadges(text, registry) {
+  let next = text;
+  for (const [repo, id] of Object.entries(DOWNLOAD_ROWS)) {
+    const product = registry.products.find((p) => p.id === id);
+    if (!product) throw new Error(`the registry has no product "${id}"`);
+    const row = new RegExp(`^(\\| \\[${repo}\\]\\([^\\n]*\\| )([^|\\n]*?)( \\|)$`, 'm');
+    if (!row.test(next)) throw new Error(`${README}: no table row starting "| [${repo}](" for its download badges`);
+    next = next.replace(row, (_, head, _cell, tail) => `${head}${downloadBadges(product)}${tail}`);
+  }
+  return next;
+}
+
 function section(registry) {
   const byId = new Map(registry.products.map((p) => [p.id, p]));
   return [
@@ -65,7 +90,7 @@ if (start < 0 || end < start) {
   console.error(`${README}: needs the two ecosystem markers:\n  ${START}\n  ${END}`);
   process.exit(1);
 }
-const next = `${text.slice(0, start + START.length)}\n\n${section(registry)}\n\n${text.slice(end)}`;
+const next = withDownloadBadges(`${text.slice(0, start + START.length)}\n\n${section(registry)}\n\n${text.slice(end)}`, registry);
 
 if (next === text) {
   console.log('profile/README.md is up to date with the ecosystem registry.');

@@ -229,12 +229,14 @@ Status: idle             Last: Committed streaming export
   `templates/ecosystem.json`. The site build regenerates the Works With
   page (its tables and the ecosystem hub picture at the top), the
   ecosystem table and pills in `page_src/works-with.mdz`, the news footer
-  and `llms.txt` from it, and publishes
+  and `llms.txt` from it, plus the download badges (one per platform a
+  product lists) in the Project page's Release status table, and publishes
   `https://mdzip.org/ecosystem.json` plus badges at
   `https://mdzip.org/assets/pills/<id>.svg`. This repo's
-  `profile/README.md` table is generated from that JSON by
-  `tools/profile-ecosystem.mjs` (a daily workflow opens a PR). Don't
-  hand-edit any generated copy; change the registry.
+  `profile/README.md` table and its Studio download badges are generated
+  from that JSON by `tools/profile-ecosystem.mjs` (a daily workflow opens
+  a PR and merges it). Don't hand-edit any generated copy; change the
+  registry.
 - **mdzip.org SEO/content checklist.** Before touching mdzip.org content
   or templates, check `mdzip.org/seo/checklist.md` — issue categories
   (status drift, heading hierarchy, structured data, known false-positive

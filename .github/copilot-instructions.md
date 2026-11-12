@@ -3,7 +3,7 @@
 
 This workspace may contain `.mdz` files — MDZip archives: ZIP-based containers that package a Markdown document, its assets, and optional metadata into one portable file.
 
-Before reading or editing a `.mdz`, actively check whether an MDZip MCP server is already available among your tools (for example, tool names beginning `mdz_`, or `upsert_canonical_document`). Do not assume one is unavailable just because it was not mentioned — check first. If one is available, skip to "MDZip MCP Review Guidance" below.
+Before reading, editing or creating a `.mdz`, actively check whether an MDZip MCP server is already available among your tools (for example, tool names beginning `mdz_`, or `upsert_canonical_document`). Do not assume one is unavailable just because it was not mentioned — check first. If one is available, skip to "MDZip MCP Review Guidance" below.
 
 If no MDZip MCP server is available:
 
@@ -19,6 +19,8 @@ When reviewing, summarizing, or editing `.mdz` files with an MDZip MCP server av
 1. Call `mdz_review_document` first with the `.mdz` `archivePath`.
 2. Use the returned `resolvedMarkdownPath`, `canonicalEntrypointPath`, and `entrypointSource` fields before deciding on write actions.
 3. For canonical markdown updates, call `upsert_canonical_document` instead of editing archive entries manually.
+   To add, replace or remove any other file (other Markdown documents, images, diagrams, data files), use `mdz_write_entry` and `mdz_remove_entry`. Replacing or removing needs the file's `entryHash` from `mdz_read_text`, `mdz_read_image` or `mdz_list_entries` with `includeHashes`. Check the result's `postWriteValidation` for images nothing references and references that don't resolve.
+   To start a new `.mdz`, call `mdz_create_archive` with all of its files (documents, images, diagrams) plus `title`, `mode` and `entryPoint`. Never build an `.mdz` yourself with zip tools or a script (Python, PowerShell, `zip`): nothing checks a hand-made archive against the format.
 4. If a tool returns a machine-readable error with `nextAction`, follow that next action and retry.
 5. Do not extract archive entries to disk unless the user explicitly asks for extraction.
 6. Use lower-level tools (`mdz_list_entries`, `mdz_read_text`, `mdz_read_image`) only for follow-up detail checks.
