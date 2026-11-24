@@ -140,6 +140,13 @@ Status: idle             Last: Committed streaming export
     commit, tag and push only after the owner says to. Approval covers
     the one commit or push it names, not later ones.
 
+- **Changelogs: what changed since the last release, briefly.** A changelog
+  entry is for someone upgrading from the previous release. A new feature
+  gets one short entry; fixes and improvements to something that was never
+  released don't get their own entries (they're part of the feature). Keep
+  entries to what the user gets, not how it works; the help pages carry the
+  detail. Fixes and changes to released features still get entries.
+
 - **Visual theme: black/white/greyscale, color for emphasis only.** The
   project is moving to a greyscale theme across all properties
   (mdzip.org, dashboard, editor demo, Studio, brand assets). Don't
