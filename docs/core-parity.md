@@ -66,6 +66,30 @@ it still needs the shared baseline suite from
 [Spec #9](https://github.com/mdzip-project/mdzip-spec/issues/9) before it can be
 called verified.
 
+## Go core (new)
+
+`mdzip-core-go` (module `github.com/mdzip-project/mdzip-core-go`, package
+`mdzip`) was written against this contract on 2026-11-25, prompted by
+ArcMD, a Go-based editor ([ArcMD #79](https://github.com/Ciao1019/ArcMD/issues/79)).
+Released as 0.1.0 (tag `v0.1.0`) the same day.
+
+| Contract operation | Go |
+|---|---|
+| R1 open/read | `Open` (path), `OpenBytes` |
+| R2 entries, bytes/text, metadata | `Entries` (`KindFile`/`KindDir`/`KindSpecial`), `Has`, `ReadFile`/`ReadText`, `Manifest` (typed getters plus `Lookup`), `EntryPoint`, `Mode`, `Warnings` |
+| R3 link resolution | `Archive.Resolve` → `Link{Kind, Entry, Fragment, Reason}` |
+| R4 validation/errors | `Validate`, `ValidateFile` → `Report` of `Finding`s; `*Error` with a spec `Code` (`errors.Is`, `CodeOf`) |
+| R5 conforming creation | `New`, `WriteFile`, `SetEntryPoint`, `EditManifest`; `Save` (atomic), `Bytes`, `WriteTo` |
+| R6 safe modification | `WriteFile`, `Remove`, manifest setters; untouched entries copied raw after a CRC check; `ERR_ENTRYPOINT_CHANGED` guard |
+| R7 safety | Path/entry-set/overlap/symlink rules on open; fixed built-in limits checked on declared and actual decompressed sizes |
+
+It passes the spec v1.2.1 fixtures (T-001–T-018 except rendering-only T-016,
+and P-001–P-008) on Go 1.26 and stable, on Linux, Windows and macOS in CI, and
+every archive its tests write passes `mdz validate`. No optional extensions.
+Like the others, it still needs the shared baseline suite from
+[Spec #9](https://github.com/mdzip-project/mdzip-spec/issues/9) before it can be
+called verified.
+
 ## Optional extensions and runtime differences
 
 | Capability | Current source state | Classification and owning issue |

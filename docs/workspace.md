@@ -28,6 +28,7 @@ lower than the producing repo's current `package.json` `version`.
 | `mdzip-core` (crates.io) | `mdzip-core-rust` | 0.1.0 |
 | `mdzip-core-lua` (LuaRocks) | `mdzip-core-lua` | 0.1.0 |
 | `org.mdzip:mdzip-core` (Maven Central) | `mdzip-core-kotlin` | 0.1.0 |
+| `github.com/mdzip-project/mdzip-core-go` (Go module) | `mdzip-core-go` | 0.1.0 |
 | `markitdown-mdzip` (PyPI) | `mdzip-markitdown` | 0.1.0 (unreleased) |
 
 ## Repositories
@@ -152,6 +153,15 @@ repos:
     remote: https://github.com/mdzip-project/mdzip-core-kotlin.git
     publishes: ["org.mdzip:mdzip-core (Maven Central)"]
     upstreams: []   # no package.json; version lives in gradle.properties
+
+  - name: mdzip-core-go
+    path: ../mdzip-core-go
+    type: core
+    visibility: public
+    role: Core Go library — read/write/validate .mdz per spec 1.2 (module github.com/mdzip-project/mdzip-core-go, package `mdzip`; Go 1.26+, stdlib archive/zip plus golang.org/x/text); tested against the spec's shared fixtures, with every archive it writes checked by `mdz validate` in CI
+    remote: https://github.com/mdzip-project/mdzip-core-go.git
+    publishes: []   # released 0.1.0 (tag v0.1.0); Go modules install from git tags via proxy.golang.org, no registry upload
+    upstreams: []   # no package.json; versions come from git tags (LibraryVersion in write.go)
 
   - name: mdzip-pandoc
     path: ../mdzip-pandoc
