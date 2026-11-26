@@ -24,6 +24,7 @@ lower than the producing repo's current `package.json` `version`.
 | `@mdzip/core-js` | `mdzip-core-js` | 1.5.0 |
 | `@mdzip/editor` | `mdzip-editor` | 1.5.0 |
 | `@mdzip/editor-ng` | `mdzip-editor` | 1.5.0 |
+| `@mdzip/mcp-server` | `mdzip-mcp` | 0.1.0 |
 | `mdzip-core` (PyPI) | `mdzip-core-python` | 0.1.0 |
 | `mdzip-core` (crates.io) | `mdzip-core-rust` | 0.1.0 |
 | `mdzip-core-lua` (LuaRocks) | `mdzip-core-lua` | 0.1.0 |
@@ -39,6 +40,7 @@ packages:
   "@mdzip/core-js": mdzip-core-js
   "@mdzip/editor": mdzip-editor
   "@mdzip/editor-ng": mdzip-editor
+  "@mdzip/mcp-server": mdzip-mcp
 
 # type: hub | spec | core | libs | apps | website | mark  (dashboard sort order + icon)
 # visibility: public | private                       (fetched from GitHub 2026-06-26)
@@ -89,6 +91,15 @@ repos:
     remote: https://github.com/mdzip-project/mdzip-vscode.git
     publishes: []
     upstreams: ["@mdzip/core-js", "@mdzip/editor"]
+
+  - name: mdzip-mcp
+    path: ../mdzip-mcp
+    type: apps
+    visibility: public
+    role: Standalone MCP server for .mdz (npm @mdzip/mcp-server, stdio, Node 20+); tool handlers copied from mdzip-vscode, plus --root, --read-only, size limits and atomic writes
+    remote: https://github.com/mdzip-project/mdzip-mcp.git
+    publishes: ["@mdzip/mcp-server"]
+    upstreams: ["@mdzip/core-js"]
 
   - name: mdzip.org
     path: ../mdzip.org
